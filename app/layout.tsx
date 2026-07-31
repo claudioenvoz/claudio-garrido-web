@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Work_Sans, IBM_Plex_Mono } from "next/font/google";
+import Header from "@/components/Header";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -21,9 +22,9 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Claudio Garrido | Piano Funcional",
+  title: "Claudio En Voz | Clases de Canto, Piano y Formación Musical",
   description:
-    "Educación musical online: Programa Piano Funcional, clases particulares de piano y canto, y masterclasses con Claudio Garrido.",
+    "Clases de canto, Programa Piano Funcional, clases de piano y masterclasses con Claudio Garrido. Aprende música con un acompañamiento cercano, claro y profesional.",
 };
 
 export default function RootLayout({
@@ -36,6 +37,7 @@ export default function RootLayout({
       <body
         className={`${fraunces.variable} ${workSans.variable} ${plexMono.variable} font-body`}
       >
+        <Header />
         {children}
       </body>
     </html>
