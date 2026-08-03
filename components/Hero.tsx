@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -29,10 +30,11 @@ export default function Hero() {
             </p>
 
             <div className="order-3 md:order-none flex flex-col sm:flex-row items-center gap-4 mb-10 w-full sm:w-auto">
-              <button
-                type="button"
+              <Link
+                href="https://google.com"
                 className="
                   w-full sm:w-auto
+                  inline-flex items-center justify-center
                   bg-neutral-900 text-white
                   px-8 py-4
                   text-base md:text-lg font-medium
@@ -40,7 +42,7 @@ export default function Hero() {
                 "
               >
                 Reservar una clase
-              </button>
+              </Link>
 
               <button
                 type="button"
