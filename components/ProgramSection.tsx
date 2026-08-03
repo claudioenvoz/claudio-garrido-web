@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 const benefits = [
   "Acceso inmediato",
@@ -41,10 +42,11 @@ export default function ProgramSection() {
                 aprender piano desde cero, comprendiendo la música de manera
                 práctica, simple y progresiva.
               </p>
+
               <p>
-                Aprenderás acordes, progresiones, acompañamiento y
-                herramientas para interpretar cientos de canciones, sin
-                necesidad de conocimientos previos.
+                Aprenderás acordes, progresiones, acompañamiento y herramientas
+                para interpretar cientos de canciones, sin necesidad de
+                conocimientos previos.
               </p>
             </div>
 
@@ -62,9 +64,10 @@ export default function ProgramSection() {
               ))}
             </ul>
 
-            <button
-              type="button"
+            <Link
+              href="/programa-piano-funcional"
               className="
+                inline-flex items-center justify-center
                 bg-neutral-900 text-white
                 px-7 py-3.5
                 text-sm md:text-base font-medium
@@ -75,7 +78,7 @@ export default function ProgramSection() {
               "
             >
               Conocer el Programa
-            </button>
+            </Link>
           </div>
         </div>
       </div>
