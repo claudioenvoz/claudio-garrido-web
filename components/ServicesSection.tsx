@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 const services = [
   {
@@ -35,6 +36,7 @@ export default function ServicesSection() {
           <h2 className="text-3xl md:text-4xl lg:text-[2.75rem] leading-[1.15] font-medium text-neutral-900 mb-6">
             ¿Cómo puedo ayudarte?
           </h2>
+
           <p className="text-base md:text-lg text-neutral-600 leading-relaxed">
             Cada persona vive un proceso musical distinto. Por eso he
             desarrollado diferentes formas de aprender, según tus objetivos y
@@ -68,24 +70,44 @@ export default function ServicesSection() {
                 <h3 className="text-lg md:text-xl font-medium text-neutral-900 mb-3">
                   {service.title}
                 </h3>
+
                 <p className="text-sm md:text-base text-neutral-600 leading-relaxed mb-6 flex-1">
                   {service.text}
                 </p>
-                <button
-                  type="button"
-                  className="
-                    self-start
-                    border border-neutral-300 text-neutral-900
-                    px-5 py-2.5
-                    text-sm font-medium
-                    rounded-full
-                    transition-colors duration-200
-                    hover:border-neutral-900 hover:bg-neutral-50
-                    focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900
-                  "
-                >
-                  {service.buttonLabel}
-                </button>
+
+                {service.title === "Clases de Canto" ? (
+                  <Link
+                    href="/servicios/canto/reserva"
+                    className="
+                      self-start
+                      border border-neutral-300 text-neutral-900
+                      px-5 py-2.5
+                      text-sm font-medium
+                      rounded-full
+                      transition-colors duration-200
+                      hover:border-neutral-900 hover:bg-neutral-50
+                      focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900
+                    "
+                  >
+                    {service.buttonLabel}
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    className="
+                      self-start
+                      border border-neutral-300 text-neutral-900
+                      px-5 py-2.5
+                      text-sm font-medium
+                      rounded-full
+                      transition-colors duration-200
+                      hover:border-neutral-900 hover:bg-neutral-50
+                      focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900
+                    "
+                  >
+                    {service.buttonLabel}
+                  </button>
+                )}
               </div>
             </div>
           ))}
