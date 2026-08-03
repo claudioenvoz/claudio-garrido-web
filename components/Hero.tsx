@@ -31,7 +31,7 @@ export default function Hero() {
 
             <div className="order-3 md:order-none flex flex-col sm:flex-row items-center gap-4 mb-10 w-full sm:w-auto">
               <Link
-                href="https://google.com"
+                href="/servicios/canto/reserva"
                 className="
                   w-full sm:w-auto
                   inline-flex items-center justify-center
