@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function CTA() {
   return (
     <section id="canto-cta-final" className="w-full">
@@ -16,7 +18,7 @@ export default function CTA() {
             Estoy listo cuando tú lo estés.
           </p>
 
-          <a
+          <Link
             href="/servicios/canto/reserva"
             className="
               inline-flex items-center justify-center
@@ -30,14 +32,16 @@ export default function CTA() {
             "
           >
             Reservar mi primera clase
-          </a>
+          </Link>
 
           <p className="text-sm text-neutral-500 mt-6">
             ¿Tienes dudas antes de comenzar?
             <br />
             Escríbeme directamente por{" "}
             <a
-              href="#"
+              href="https://wa.me/56948507518"
+              target="_blank"
+              rel="noopener noreferrer"
               className="
                 text-neutral-900 underline underline-offset-2
                 transition-colors duration-200

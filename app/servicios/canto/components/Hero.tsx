@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -52,7 +53,7 @@ export default function Hero() {
               "
               style={{ animationDelay: "240ms" }}
             >
-              <a
+              <Link
                 href="/servicios/canto/reserva"
                 className="
                   w-full sm:w-auto
@@ -67,7 +68,7 @@ export default function Hero() {
                 "
               >
                 Reservar mi primera clase
-              </a>
+              </Link>
 
               <a
                 href="#canto-como-funcionan"
