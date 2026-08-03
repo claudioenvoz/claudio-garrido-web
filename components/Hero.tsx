@@ -44,18 +44,21 @@ export default function Hero() {
                 Reservar una clase
               </Link>
 
-              <button
-                type="button"
+              <Link
+                href="#piano-funcional"
                 className="
                   w-full sm:w-auto
+                  inline-flex items-center justify-center
                   border border-neutral-300 text-neutral-900
                   px-8 py-4
                   text-base md:text-lg font-medium
                   rounded-full
+                  transition-colors duration-200
+                  hover:border-neutral-900 hover:bg-neutral-50
                 "
               >
                 Conocer Piano Funcional
-              </button>
+              </Link>
             </div>
 
             <ul className="flex flex-col items-center md:items-start gap-3">
