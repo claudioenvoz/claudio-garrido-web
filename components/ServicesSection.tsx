@@ -19,6 +19,7 @@ const services = [
     text: "Clases individuales para quienes desean avanzar de forma personalizada.",
     buttonLabel: "Más información",
     image: "/images/service-piano.jpg",
+    href: "/servicios/piano",
   },
   {
     title: "Masterclasses",
