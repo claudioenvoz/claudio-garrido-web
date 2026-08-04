@@ -19,7 +19,6 @@ const services = [
     text: "Clases individuales para quienes desean avanzar de forma personalizada.",
     buttonLabel: "Más información",
     image: "/images/service-piano.jpg",
-    href: "/servicios/piano",
   },
   {
     title: "Masterclasses",
@@ -78,7 +77,55 @@ export default function ServicesSection() {
 
                 {service.title === "Clases de Canto" ? (
                   <Link
-                    href="/servicios/canto/reserva"
+                    href="/servicios/canto"
+                    className="
+                      self-start
+                      border border-neutral-300 text-neutral-900
+                      px-5 py-2.5
+                      text-sm font-medium
+                      rounded-full
+                      transition-colors duration-200
+                      hover:border-neutral-900 hover:bg-neutral-50
+                      focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900
+                    "
+                  >
+                    {service.buttonLabel}
+                  </Link>
+                ) : service.title === "Clases de Piano" ? (
+                  <Link
+                    href="/servicios/piano"
+                    className="
+                      self-start
+                      border border-neutral-300 text-neutral-900
+                      px-5 py-2.5
+                      text-sm font-medium
+                      rounded-full
+                      transition-colors duration-200
+                      hover:border-neutral-900 hover:bg-neutral-50
+                      focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900
+                    "
+                  >
+                    {service.buttonLabel}
+                  </Link>
+                ) : service.title === "Programa Piano Funcional" ? (
+                  <Link
+                    href="/programa-piano-funcional"
+                    className="
+                      self-start
+                      border border-neutral-300 text-neutral-900
+                      px-5 py-2.5
+                      text-sm font-medium
+                      rounded-full
+                      transition-colors duration-200
+                      hover:border-neutral-900 hover:bg-neutral-50
+                      focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900
+                    "
+                  >
+                    {service.buttonLabel}
+                  </Link>
+                ) : service.title === "Masterclasses" ? (
+                  <Link
+                    href="/masterclasses"
                     className="
                       self-start
                       border border-neutral-300 text-neutral-900
