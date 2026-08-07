@@ -2,8 +2,6 @@
 //
 // Integración real con Google Calendar, usando una cuenta de servicio
 // (compartida con permiso de edición sobre el calendario de Claudio).
-// Reemplaza el stub que existía desde la etapa de arquitectura inicial
-// del sistema de reservas — mismo propósito, ahora con la pieza real.
 
 import { google } from "googleapis";
 import type { Reserva } from "@/lib/reservas/types";
@@ -27,15 +25,12 @@ function obtenerCredenciales() {
   if (!email || !privateKey || !calendarId) {
     console.warn(
       "[GoogleCalendar] Faltan variables de entorno (GOOGLE_SERVICE_ACCOUNT_EMAIL, " +
-        "GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY o GOOGLE_CALENDAR_ID) — usando valores FICTICIOS. " +
-        "Las llamadas reales a Google Calendar van a fallar hasta que las configures."
+        "GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY o GOOGLE_CALENDAR_ID) — usando valores FICTICIOS."
     );
   }
 
   return {
     email: email ?? VALOR_FICTICIO_EMAIL,
-    // Reemplaza los "\n" literales del .env por saltos de línea reales,
-    // que es como Google espera la private key.
     privateKey: (privateKey ?? VALOR_FICTICIO_KEY).replace(/\\n/g, "\n"),
     calendarId: calendarId ?? VALOR_FICTICIO_CALENDAR_ID,
   };
@@ -55,23 +50,47 @@ function obtenerClienteCalendar() {
 
 const ZONA_HORARIA = "America/Santiago";
 
-function calcularRangoEvento(reserva: Pick<Reserva, "fecha" | "hora" | "duracionMinutos">) {
+function calcularRangoEvento(
+  reserva: Pick<Reserva, "fecha" | "hora" | "duracionMinutos">
+) {
   const inicio = new Date(`${reserva.fecha}T${reserva.hora}:00`);
-  const fin = new Date(inicio.getTime() + reserva.duracionMinutos * 60 * 1000);
+  const fin = new Date(
+    inicio.getTime() + reserva.duracionMinutos * 60 * 1000
+  );
+
   return { inicio, fin };
 }
 
 export interface CalendarProvider {
-  estaDisponible(fecha: string, hora: string, duracionMinutos: number): Promise<boolean>;
-  crearEvento(reserva: Reserva): Promise<{ eventId: string }>;
-  cancelarEvento(eventId: string): Promise<void>;
+  estaDisponible(
+    fecha: string,
+    hora: string,
+    duracionMinutos: number
+  ): Promise<boolean>;
+
+  obtenerHorariosOcupados(
+    fecha: string
+  ): Promise<string[]>;
+
+  crearEvento(
+    reserva: Reserva
+  ): Promise<{ eventId: string }>;
+
+  cancelarEvento(
+    eventId: string
+  ): Promise<void>;
 }
 
 export const googleCalendarProvider: CalendarProvider = {
   async estaDisponible(fecha, hora, duracionMinutos) {
     const { calendarId } = obtenerCredenciales();
     const calendar = obtenerClienteCalendar();
-    const { inicio, fin } = calcularRangoEvento({ fecha, hora, duracionMinutos });
+
+    const { inicio, fin } = calcularRangoEvento({
+      fecha,
+      hora,
+      duracionMinutos,
+    });
 
     const respuesta = await calendar.freebusy.query({
       requestBody: {
@@ -82,8 +101,179 @@ export const googleCalendarProvider: CalendarProvider = {
       },
     });
 
-    const ocupado = respuesta.data.calendars?.[calendarId]?.busy ?? [];
+    const ocupado =
+      respuesta.data.calendars?.[calendarId]?.busy ?? [];
+
     return ocupado.length === 0;
+  },
+
+  async obtenerHorariosOcupados(fecha: string) {
+    const { calendarId } = obtenerCredenciales();
+    const calendar = obtenerClienteCalendar();
+
+    const inicioDia = new Date(`${fecha}T00:00:00`);
+    const finDia = new Date(`${fecha}T23:59:59`);
+
+    const respuesta = await calendar.events.list({
+      calendarId,
+      timeMin: inicioDia.toISOString(),
+      timeMax: finDia.toISOString(),
+      singleEvents: true,
+      orderBy: "startTime",
+    });
+
+    const eventos = respuesta.data.items ?? [];
+
+    return eventos
+      .map((evento) => {
+        const inicio = evento.start?.dateTime;
+
+        if (!inicio) return null;
+
+        const fechaInicio = new Date(inicio);
+
+        return fechaInicio.toLocaleTimeString("es-CL", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+          timeZone: ZONA_HORARIA,
+        });
+      })
+      .filter(Boolean) as string[];
+  },
+
+  async crearEvento(reserva) {
+    const { calendarId } = obtenerCredenciales();
+    const calendar = obtenerClienteCalendar();
+
+    const { inicio, fin } = calcularRangoEvento(reserva);
+
+    const respuesta = await calendar.events.insert({
+      calendarId,
+      requestBody: {
+        summary: `${reserva.planNombre} — ${reserva.nombre}`,
+
+        description:
+          `Servicio: ${reserva.servicio}\n` +
+          `Alumno: ${reserva.nombre}\n` +
+          `Email: ${reserva.email}\n` +
+          `WhatsApp: ${reserva.whatsapp}\n` +
+          (reserva.comentarios
+            ? `Comentarios: ${reserva.comentarios}\n`
+            : "") +
+          `Reserva ID: ${reserva.id}`,
+
+        start: {
+          dateTime: inicio.toISOString(),
+          timeZone: ZONA_HORARIA,
+        },
+
+        end: {
+          dateTime: fin.toISOString(),
+          timeZone: ZONA_HORARIA,
+        },
+      },
+    });
+
+    if (!respuesta.data.id) {
+      throw new Error(
+        "[GoogleCalendar] El evento se creó pero no devolvió un id."
+      );
+    }
+
+    return {
+      eventId: respuesta.data.id,
+    };
+  },
+  const ZONA_HORARIA = "America/Santiago";
+
+function calcularRangoEvento(
+  reserva: Pick<Reserva, "fecha" | "hora" | "duracionMinutos">
+) {
+  const inicio = new Date(`${reserva.fecha}T${reserva.hora}:00`);
+  const fin = new Date(
+    inicio.getTime() + reserva.duracionMinutos * 60 * 1000
+  );
+  return { inicio, fin };
+}
+
+export interface CalendarProvider {
+  estaDisponible(
+    fecha: string,
+    hora: string,
+    duracionMinutos: number
+  ): Promise<boolean>;
+
+  obtenerHorariosOcupados(fecha: string): Promise<string[]>;
+
+  crearEvento(reserva: Reserva): Promise<{ eventId: string }>;
+
+  cancelarEvento(eventId: string): Promise<void>;
+}
+
+export const googleCalendarProvider: CalendarProvider = {
+  async estaDisponible(fecha, hora, duracionMinutos) {
+    const { calendarId } = obtenerCredenciales();
+    const calendar = obtenerClienteCalendar();
+    const { inicio, fin } = calcularRangoEvento({
+      fecha,
+      hora,
+      duracionMinutos,
+    });
+
+    const respuesta = await calendar.freebusy.query({
+      requestBody: {
+        timeMin: inicio.toISOString(),
+        timeMax: fin.toISOString(),
+        timeZone: ZONA_HORARIA,
+        items: [{ id: calendarId }],
+      },
+    });
+
+    const ocupado =
+      respuesta.data.calendars?.[calendarId]?.busy ?? [];
+
+    return ocupado.length === 0;
+  },
+
+  async obtenerHorariosOcupados(fecha) {
+    const { calendarId } = obtenerCredenciales();
+    const calendar = obtenerClienteCalendar();
+
+    const inicioDia = new Date(`${fecha}T00:00:00`);
+    const finDia = new Date(`${fecha}T23:59:59`);
+
+    const respuesta = await calendar.events.list({
+      calendarId,
+      timeMin: inicioDia.toISOString(),
+      timeMax: finDia.toISOString(),
+      singleEvents: true,
+      orderBy: "startTime",
+    });
+
+    const eventos = respuesta.data.items ?? [];
+
+    return eventos
+      .map((evento) => {
+        const inicio = evento.start?.dateTime;
+
+        if (!inicio) return null;
+
+        const fechaInicio = new Date(inicio);
+
+        const hora = fechaInicio
+          .getHours()
+          .toString()
+          .padStart(2, "0");
+
+        const minuto = fechaInicio
+          .getMinutes()
+          .toString()
+          .padStart(2, "0");
+
+        return `${hora}:${minuto}`;
+      })
+      .filter(Boolean) as string[];
   },
 
   async crearEvento(reserva) {
@@ -95,29 +285,46 @@ export const googleCalendarProvider: CalendarProvider = {
       calendarId,
       requestBody: {
         summary: `${reserva.planNombre} — ${reserva.nombre}`,
+
         description:
           `Servicio: ${reserva.servicio}\n` +
           `Alumno: ${reserva.nombre}\n` +
           `Email: ${reserva.email}\n` +
           `WhatsApp: ${reserva.whatsapp}\n` +
-          (reserva.comentarios ? `Comentarios: ${reserva.comentarios}\n` : "") +
+          (reserva.comentarios
+            ? `Comentarios: ${reserva.comentarios}\n`
+            : "") +
           `Reserva ID: ${reserva.id}`,
-        start: { dateTime: inicio.toISOString(), timeZone: ZONA_HORARIA },
-        end: { dateTime: fin.toISOString(), timeZone: ZONA_HORARIA },
+
+        start: {
+          dateTime: inicio.toISOString(),
+          timeZone: ZONA_HORARIA,
+        },
+
+        end: {
+          dateTime: fin.toISOString(),
+          timeZone: ZONA_HORARIA,
+        },
       },
     });
 
     if (!respuesta.data.id) {
-      throw new Error("[GoogleCalendar] El evento se creó pero no devolvió un id.");
+      throw new Error(
+        "[GoogleCalendar] El evento se creó pero no devolvió un id."
+      );
     }
 
-    return { eventId: respuesta.data.id };
+    return {
+      eventId: respuesta.data.id,
+    };
   },
-
-  async cancelarEvento(eventId) {
+    async cancelarEvento(eventId) {
     const { calendarId } = obtenerCredenciales();
     const calendar = obtenerClienteCalendar();
 
-    await calendar.events.delete({ calendarId, eventId });
+    await calendar.events.delete({
+      calendarId,
+      eventId,
+    });
   },
 };

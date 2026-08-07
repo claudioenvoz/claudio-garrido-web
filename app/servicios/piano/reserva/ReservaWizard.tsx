@@ -36,7 +36,7 @@ const plans: { id: PlanId; name: string; price: string; detail: string }[] = [
   },
 ];
 
-const timeSlots = ["09:00", "10:00", "11:00", "14:00", "16:00", "18:00"];
+const timeSlots = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
 
 const monthNames = [
   "Enero",
@@ -58,9 +58,10 @@ const weekDays = ["L", "M", "M", "J", "V", "S", "D"];
 // DEMO: determina si un día está "bloqueado" solo para fines visuales.
 // Reemplazar por disponibilidad real (Google Calendar) en la integración.
 function isDayBlockedDemo(date: Date) {
-  const day = date.getDay(); // 0 = domingo
-  if (day === 0) return true; // domingos bloqueados
-  return date.getDate() % 7 === 0; // un día bloqueado cada semana, como ejemplo
+  const day = date.getDay(); // 0 = domingo, 6 = sábado
+
+  // Bloquear sábados y domingos
+  return day === 0 || day === 6;
 }
 
 function getMonthMatrix(year: number, month: number) {

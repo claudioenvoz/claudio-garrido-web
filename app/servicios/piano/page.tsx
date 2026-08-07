@@ -7,7 +7,7 @@ import Plans from "./components/Plans";
 import FAQ from "./components/FAQ";
 import CTA from "./components/CTA";
 
-export default function CantoPage() {
+export default function PianoPage() {
   return (
     <main className="w-full">
       <Hero />

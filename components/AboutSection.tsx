@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function AboutSection() {
   return (
@@ -70,20 +71,21 @@ export default function AboutSection() {
               </div>
             </div>
 
-            <button
-              type="button"
-              className="
-                bg-neutral-900 text-white
-                px-7 py-3.5
-                text-sm md:text-base font-medium
-                rounded-full
-                transition-colors duration-200
-                hover:bg-neutral-800
-                focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900
-              "
-            >
-              Conocer mi historia
-            </button>
+            <Link
+  href="/sobre-mi"
+  className="
+    inline-flex items-center justify-center
+    bg-neutral-900 text-white
+    px-7 py-3.5
+    text-sm md:text-base font-medium
+    rounded-full
+    transition-colors duration-200
+    hover:bg-neutral-800
+    focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900
+  "
+>
+  Conocer mi historia
+</Link>
           </div>
         </div>
       </div>

@@ -1,0 +1,390 @@
+import Image from "next/image";
+
+export default function MasterclassesPage() {
+  return (
+    <main className="min-h-screen bg-white">
+
+      {/* HERO */}
+
+      <section className="w-full">
+        <div className="mx-auto max-w-7xl px-6 md:px-10 py-20 md:py-28">
+
+          <div className="grid md:grid-cols-2 gap-14 items-center">
+
+            <div>
+
+              <p className="uppercase tracking-[0.2em] text-neutral-500 text-sm mb-5">
+                Masterclasses Gratuitas
+              </p>
+
+              <h1 className="text-4xl md:text-6xl leading-[1.1] font-medium text-neutral-900 mb-7">
+                Aprende música de forma práctica, gratuita y desde cualquier lugar.
+              </h1>
+
+              <p className="text-lg text-neutral-600 leading-relaxed mb-10">
+                Las Masterclasses de Piano Funcional son encuentros online donde
+                comparto herramientas reales para comprender el piano, la armonía
+                y el repertorio popular de una forma clara y aplicable desde el
+                primer día.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+
+                <button
+                  className="
+                    bg-neutral-900
+                    text-white
+                    px-8
+                    py-4
+                    rounded-full
+                    text-lg
+                    font-medium
+                  "
+                >
+                  Quiero recibir invitaciones
+                </button>
+
+                <button
+                  className="
+                    border
+                    border-neutral-300
+                    px-8
+                    py-4
+                    rounded-full
+                    text-lg
+                    font-medium
+                  "
+                >
+                  Comunidad WhatsApp
+                </button>
+
+              </div>
+
+            </div>
+
+            <div className="relative aspect-[4/5]">
+
+              <Image
+                src="/images/masterclass-hero.jpg"
+                alt="Masterclass Piano Funcional"
+                fill
+                className="object-cover rounded-2xl"
+                priority
+              />
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* ¿QUÉ ES UNA MASTERCLASS? */}
+
+      <section className="w-full border-t border-neutral-200">
+
+        <div className="mx-auto max-w-5xl px-6 md:px-10 py-20">
+
+          <h2 className="text-3xl md:text-4xl font-medium text-neutral-900 mb-8">
+            ¿Qué es una Masterclass?
+          </h2>
+
+          <p className="text-lg text-neutral-600 leading-relaxed mb-6">
+            Una Masterclass es una clase abierta donde cualquier persona puede
+            participar gratuitamente, incluso si nunca ha estudiado música.
+          </p>
+
+          <p className="text-lg text-neutral-600 leading-relaxed mb-6">
+            El objetivo no es únicamente entregar información, sino ayudarte a
+            comprender conceptos que normalmente parecen complejos, mediante una
+            metodología simple, práctica y enfocada en resultados.
+          </p>
+
+          <p className="text-lg text-neutral-600 leading-relaxed">
+            Cada encuentro aborda un tema específico relacionado con el piano,
+            la armonía, el repertorio popular o la interpretación musical,
+            siempre acompañado de ejemplos reales y aplicaciones prácticas.
+          </p>
+
+        </div>
+
+      </section>
+      {/* BENEFICIOS */}
+
+      <section className="w-full bg-neutral-50">
+
+        <div className="mx-auto max-w-6xl px-6 md:px-10 py-20">
+
+          <h2 className="text-3xl md:text-4xl font-medium text-neutral-900 text-center mb-14">
+            ¿Qué recibirás al participar?
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-8">
+
+            <div
+              className="
+                bg-white
+                border
+                border-neutral-200
+                rounded-2xl
+                p-8
+              "
+            >
+
+              <h3 className="text-xl font-medium text-neutral-900 mb-4">
+                🎹 Conocimiento práctico
+              </h3>
+
+              <p className="text-neutral-600 leading-relaxed">
+                Aprenderás conceptos musicales aplicados directamente al piano,
+                con ejemplos reales que podrás comprender y utilizar en tus
+                propias canciones.
+              </p>
+
+            </div>
+
+
+            <div
+              className="
+                bg-white
+                border
+                border-neutral-200
+                rounded-2xl
+                p-8
+              "
+            >
+
+              <h3 className="text-xl font-medium text-neutral-900 mb-4">
+                📘 Material complementario
+              </h3>
+
+              <p className="text-neutral-600 leading-relaxed">
+                Después de cada Masterclass recibirás recursos adicionales,
+                documentos de apoyo, ejercicios y materiales diseñados para
+                continuar tu aprendizaje.
+              </p>
+
+            </div>
+
+
+            <div
+              className="
+                bg-white
+                border
+                border-neutral-200
+                rounded-2xl
+                p-8
+              "
+            >
+
+              <h3 className="text-xl font-medium text-neutral-900 mb-4">
+                📜 Certificado de participación
+              </h3>
+
+              <p className="text-neutral-600 leading-relaxed">
+                Quienes completen la asistencia podrán recibir un certificado
+                digital que acredita su participación en la actividad.
+              </p>
+
+            </div>
+
+
+            <div
+              className="
+                bg-white
+                border
+                border-neutral-200
+                rounded-2xl
+                p-8
+              "
+            >
+
+              <h3 className="text-xl font-medium text-neutral-900 mb-4">
+                🎥 Acceso a recursos exclusivos
+              </h3>
+
+              <p className="text-neutral-600 leading-relaxed">
+                En algunas actividades podrás acceder a grabaciones, videos
+                complementarios y contenidos exclusivos preparados para los
+                asistentes.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* TRANSFORMACIÓN */}
+
+      <section className="w-full">
+
+        <div className="mx-auto max-w-5xl px-6 md:px-10 py-20">
+
+          <h2 className="text-3xl md:text-4xl font-medium text-neutral-900 mb-8">
+            Más que una clase: una nueva forma de comprender la música
+          </h2>
+
+
+          <div className="text-lg text-neutral-600 leading-relaxed space-y-6">
+
+            <p>
+              Muchas personas sienten que aprender piano o comprender la música
+              es demasiado difícil porque nunca tuvieron una guía clara.
+            </p>
+
+
+            <p>
+              Las Masterclasses buscan cambiar esa experiencia: entregarte una
+              explicación sencilla, ordenada y práctica para que puedas comenzar
+              a ver la música desde otra perspectiva.
+            </p>
+
+
+            <p>
+              No importa si estás dando tus primeros pasos o si ya tienes
+              experiencia. Cada encuentro está pensado para ayudarte a avanzar,
+              resolver dudas y descubrir nuevas herramientas musicales.
+            </p>
+
+
+          </div>
+
+        </div>
+
+      </section>
+      {/* INSCRIPCIÓN */}
+
+      <section className="w-full bg-neutral-50">
+
+        <div className="mx-auto max-w-4xl px-6 md:px-10 py-24">
+
+          <div className="bg-white border border-neutral-200 rounded-3xl p-8 md:p-12">
+
+            <h2 className="text-3xl md:text-4xl font-medium text-neutral-900 text-center mb-6">
+              No te pierdas la próxima Masterclass
+            </h2>
+
+            <p className="text-lg text-neutral-600 text-center leading-relaxed max-w-2xl mx-auto mb-12">
+              Déjame tus datos y te avisaré personalmente cuando abramos una
+              nueva fecha. También podrás solicitar que te agregue a la comunidad
+              oficial de WhatsApp para recibir recordatorios y novedades.
+            </p>
+
+            <form className="space-y-6">
+
+              <div>
+
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-neutral-700 mb-2"
+                >
+                  Correo electrónico
+                </label>
+
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="nombre@email.com"
+                  className="
+                    w-full
+                    rounded-xl
+                    border
+                    border-neutral-300
+                    px-5
+                    py-4
+                    outline-none
+                    focus:border-neutral-900
+                  "
+                />
+
+              </div>
+
+              <div>
+
+                <label
+                  htmlFor="telefono"
+                  className="block text-sm font-medium text-neutral-700 mb-2"
+                >
+                  Número de WhatsApp (opcional)
+                </label>
+
+                <input
+                  id="telefono"
+                  type="tel"
+                  placeholder="+56 9 1234 5678"
+                  className="
+                    w-full
+                    rounded-xl
+                    border
+                    border-neutral-300
+                    px-5
+                    py-4
+                    outline-none
+                    focus:border-neutral-900
+                  "
+                />
+
+              </div>
+
+              <div className="pt-4 flex flex-col sm:flex-row gap-4">
+
+                <button
+                  type="submit"
+                  className="
+                    flex-1
+                    bg-neutral-900
+                    text-white
+                    px-8
+                    py-4
+                    rounded-full
+                    text-lg
+                    font-medium
+                    transition-colors
+                    hover:bg-neutral-800
+                  "
+                >
+                  Quiero recibir invitaciones
+                </button>
+
+                <a
+                  href="https://chat.whatsapp.com/FMtTpcK2jzfDVWyoocUliY?mode=gi_t"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="
+                    flex-1
+                    inline-flex
+                    items-center
+                    justify-center
+                    border
+                    border-neutral-300
+                    rounded-full
+                    px-8
+                    py-4
+                    text-lg
+                    font-medium
+                    text-neutral-900
+                    transition-colors
+                    hover:bg-neutral-100
+                  "
+                >
+                  Unirme a la Comunidad
+                </a>
+
+              </div>
+
+            </form>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+  );
+}

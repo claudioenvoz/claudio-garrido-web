@@ -51,18 +51,27 @@ export async function guardarArchivo(
   }
 
   const bytes = Buffer.from(await archivo.arrayBuffer());
-  const ruta = `${crypto.randomUUID()}-${archivo.name}`;
 
-  const { error: errorSubida } = await supabaseServidor.storage
+const nombreSeguro = archivo.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+const ruta = `${crypto.randomUUID()}-${nombreSeguro}`;
+
+const { error: errorSubida } = await supabaseServidor.storage
+  .from(BUCKET)
+  .upload(ruta, bytes, {
+    contentType: archivo.type,
+  });
+
+if (errorSubida) {
+  return {
+    exito: false,
+    error: `Error al subir el archivo: ${errorSubida.message}`,
+  };
+}
+
+const { data } =
+  supabaseServidor.storage
     .from(BUCKET)
-    .upload(ruta, bytes, { contentType: archivo.type });
-
-  if (errorSubida) {
-    return { exito: false, error: `Error al subir el archivo: ${errorSubida.message}` };
-  }
-
-  const { data } = supabaseServidor.storage.from(BUCKET).getPublicUrl(ruta);
-
+    .getPublicUrl(ruta);
   return {
     exito: true,
     archivo: {

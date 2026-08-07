@@ -1,36 +1,39 @@
+import Link from "next/link";
+
 const navLinks = [
-  { label: "Inicio", href: "#inicio" },
-  { label: "Sobre mí", href: "#sobre-mi" },
-  { label: "Servicios", href: "#servicios" },
-  { label: "Piano Funcional", href: "#piano-funcional" },
-  { label: "Contacto", href: "#contacto" },
+  { label: "Inicio", href: "/#inicio" },
+  { label: "Sobre mí", href: "/#sobre-mi" },
+  { label: "Servicios", href: "/#servicios" },
+  { label: "Piano Funcional", href: "/#piano-funcional" },
+  { label: "Contacto", href: "/#contacto" },
 ];
 
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b border-neutral-200">
       <div className="mx-auto max-w-7xl px-6 md:px-10 h-20 flex items-center justify-between">
-        <a
-          href="#inicio"
+
+        <Link
+          href="/#inicio"
           className="text-base font-medium text-neutral-900 transition-opacity duration-200 hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 rounded-sm"
         >
           Claudio En Voz
-        </a>
+        </Link>
 
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.label}
               href={link.href}
               className="text-sm font-medium text-neutral-700 transition-colors duration-200 hover:text-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 rounded-sm"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
-        <button
-          type="button"
+        <Link
+          href="/reservar"
           className="
             hidden md:inline-flex
             bg-neutral-900 text-white
@@ -43,7 +46,7 @@ export default function Header() {
           "
         >
           Reservar una clase
-        </button>
+        </Link>
 
         <button
           type="button"
@@ -54,6 +57,7 @@ export default function Header() {
           <span className="block w-6 h-px bg-neutral-900" />
           <span className="block w-6 h-px bg-neutral-900" />
         </button>
+
       </div>
     </header>
   );
