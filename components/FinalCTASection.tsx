@@ -36,7 +36,7 @@ export default function FinalCTASection() {
 
             <Link
 
-              href="/servicios/canto/reserva"
+              href="/reservar"
 
               className="
 
