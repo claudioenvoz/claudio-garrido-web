@@ -30,7 +30,8 @@ export default function SobreMiPage() {
 
               <div className="flex flex-col sm:flex-row gap-4">
 
-                <button
+                <Link
+                  href="/reservar"
                   className="
                     bg-neutral-900
                     text-white
@@ -42,7 +43,7 @@ export default function SobreMiPage() {
                   "
                 >
                   Reservar una clase
-                </button>
+                </Link>
 
                 <a
                   href="https://wa.me/56948507518"
@@ -244,7 +245,8 @@ export default function SobreMiPage() {
 
           <div className="flex flex-col sm:flex-row justify-center gap-4">
 
-            <button
+            <Link
+              href="/reservar"
               className="
                 bg-white
                 text-neutral-900
@@ -256,7 +258,7 @@ export default function SobreMiPage() {
               "
             >
               Reservar una clase
-            </button>
+            </Link>
 
             <a
               href="https://wa.me/56948507518"
