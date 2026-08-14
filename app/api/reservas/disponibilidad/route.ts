@@ -40,21 +40,80 @@ const TIME_SLOTS = [
 ];
 
 /**
+ * Normaliza la clave privada de Google.
+ *
+ * Puede venir desde .env.local o Vercel:
+ *
+ * 1. Con saltos de línea reales.
+ * 2. Con "\n" escritos literalmente.
+ * 3. Con comillas exteriores.
+ *
+ * Normalizamos todos esos casos antes de entregarla a Google.
+ */
+function normalizarPrivateKey(privateKey: string): string {
+  let key = privateKey.trim();
+
+  // Elimina comillas exteriores si existen.
+  if (
+    key.length >= 2 &&
+    key.startsWith('"') &&
+    key.endsWith('"')
+  ) {
+    key = key.slice(1, -1);
+  }
+
+  if (
+    key.length >= 2 &&
+    key.startsWith("'") &&
+    key.endsWith("'")
+  ) {
+    key = key.slice(1, -1);
+  }
+
+  // Convierte los "\n" literales en saltos de línea reales.
+  key = key.replace(/\\n/g, "\n");
+
+  // Normaliza posibles saltos de línea de Windows.
+  key = key.replace(/\r\n/g, "\n");
+
+  return key.trim();
+}
+
+/**
  * Crea el cliente autenticado de Google Calendar.
  */
 function obtenerClienteGoogleCalendar() {
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  const privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
+  const privateKeyRaw =
+    process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
 
-  if (!email || !privateKey || !CALENDAR_ID) {
+  if (!email || !privateKeyRaw || !CALENDAR_ID) {
     throw new Error(
       "Faltan variables de entorno de Google Calendar. Se requieren GOOGLE_SERVICE_ACCOUNT_EMAIL, GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY y GOOGLE_CALENDAR_ID."
     );
   }
 
+  const privateKey = normalizarPrivateKey(privateKeyRaw);
+
+  console.log(
+    "[disponibilidad/route.ts] Google Calendar — email presente:",
+    !!email
+  );
+
+  console.log(
+    "[disponibilidad/route.ts] Google Calendar — calendar ID presente:",
+    !!CALENDAR_ID
+  );
+
+  console.log(
+    "[disponibilidad/route.ts] Google Calendar — private key válida:",
+    privateKey.startsWith("-----BEGIN") &&
+      privateKey.includes("-----END")
+  );
+
   const auth = new google.auth.JWT({
     email,
-    key: privateKey.replace(/\\n/g, "\n"),
+    key: privateKey,
     scopes: [
       "https://www.googleapis.com/auth/calendar",
     ],
