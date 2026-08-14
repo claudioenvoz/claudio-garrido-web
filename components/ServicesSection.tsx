@@ -24,7 +24,7 @@ const services = [
     title: "Masterclasses",
     text: "Clases abiertas donde aprenderás herramientas prácticas sobre música, piano e interpretación.",
     buttonLabel: "Ver próximas fechas",
-    image: "/images/service-masterclass.jpg",
+    image: "/images/private-piano.jpg",
   },
 ];
 

@@ -15,7 +15,7 @@ const classes = [
   {
     title: "Masterclasses",
     text: "Sesiones puntuales con herramientas prácticas de música e interpretación.",
-    image: "/images/private-masterclass.jpg",
+    image: "/images/private-piano.jpg?v=2",
   },
 ];
 
@@ -60,6 +60,7 @@ export default function PrivateClassesSection() {
                   alt={item.title}
                   fill
                   className="object-cover"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
               </div>
 

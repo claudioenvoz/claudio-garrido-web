@@ -446,7 +446,7 @@ export default function MasterclassesPage() {
               </div>
 
               {mensaje && (
-                <p className="text-center text-sm text-neutral-600 pt-4">
+                <p className="text-center text-sm text-neutral-600 pt-4"></p>
                   {mensaje}
                 </p>
               )}    

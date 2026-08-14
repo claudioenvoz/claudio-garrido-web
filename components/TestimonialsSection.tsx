@@ -2,18 +2,18 @@ import Image from "next/image";
 
 const testimonials = [
   {
-    name: "Nombre Apellido",
-    text: "Llegué sin saber nada de música y hoy puedo tocar canciones completas. Las clases son claras, cercanas y muy bien explicadas.",
+    name: "Edgar De La Vega",
+    text: "Recomiendo 100% a Claudio como Profesor porque, con el tiempo he notado mi evolución y, ademas de su conocimiento musical, él sabe bien cómo entregarlo a sus estudiantes",
     image: "/images/testimonial-1.jpg",
   },
   {
-    name: "Nombre Apellido",
-    text: "El acompañamiento es muy personalizado. Siento que las clases se adaptan realmente a mi ritmo y mis objetivos.",
+    name: "Marisol Calderón",
+    text: "Claudio es un Profesor que te ayuda a crecer ‘de la mano’, siempre te acompaña con cercanía, sensibilidad y comprensión",
     image: "/images/testimonial-2.jpg",
   },
   {
-    name: "Nombre Apellido",
-    text: "Piano Funcional cambió por completo mi forma de entender la música. Ahora disfruto mucho más el proceso de aprender.",
+    name: "Giorgio Soncini",
+    text: "Claudio es muy metódico y desafiante; tiene un plan de trabajo que te permite evidenciar tus avances y siempre te motiva a seguir creciendo.",
     image: "/images/testimonial-3.jpg",
   },
 ];
@@ -26,6 +26,7 @@ export default function TestimonialsSection() {
           <h2 className="text-3xl md:text-4xl lg:text-[2.75rem] leading-[1.15] font-medium text-neutral-900 mb-6">
             Lo que dicen mis estudiantes
           </h2>
+
           <p className="text-base md:text-lg text-neutral-600 leading-relaxed">
             Cada proceso de aprendizaje es distinto, pero todos tienen algo en
             común: descubrir que aprender música sí puede ser una experiencia
@@ -34,9 +35,9 @@ export default function TestimonialsSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
+          {testimonials.map((testimonial) => (
             <div
-              key={index}
+              key={testimonial.name}
               className="flex flex-col items-center text-center rounded-2xl border border-neutral-200 p-8"
             >
               <div className="relative w-16 h-16 rounded-full bg-neutral-100 overflow-hidden mb-5">
@@ -52,12 +53,15 @@ export default function TestimonialsSection() {
                 {testimonial.text}
               </p>
 
-              <div className="flex items-center gap-1 mb-3" aria-hidden="true">
-                <span className="text-neutral-400 text-sm">★</span>
-                <span className="text-neutral-400 text-sm">★</span>
-                <span className="text-neutral-400 text-sm">★</span>
-                <span className="text-neutral-400 text-sm">★</span>
-                <span className="text-neutral-400 text-sm">★</span>
+              <div
+                className="flex items-center justify-center gap-1 mb-3"
+                aria-label="5 estrellas de 5"
+              >
+                <span className="text-neutral-900 text-sm">★</span>
+                <span className="text-neutral-900 text-sm">★</span>
+                <span className="text-neutral-900 text-sm">★</span>
+                <span className="text-neutral-900 text-sm">★</span>
+                <span className="text-neutral-900 text-sm">★</span>
               </div>
 
               <p className="text-sm font-medium text-neutral-900">
