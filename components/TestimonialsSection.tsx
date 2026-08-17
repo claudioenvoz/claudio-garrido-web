@@ -57,11 +57,11 @@ export default function TestimonialsSection() {
                 className="flex items-center justify-center gap-1 mb-3"
                 aria-label="5 estrellas de 5"
               >
-                <span className="text-neutral-900 text-sm">★</span>
-                <span className="text-neutral-900 text-sm">★</span>
-                <span className="text-neutral-900 text-sm">★</span>
-                <span className="text-neutral-900 text-sm">★</span>
-                <span className="text-neutral-900 text-sm">★</span>
+                <span className="text-yellow-400 text-sm">★</span>
+                <span className="text-yellow-400 text-sm">★</span>
+                <span className="text-yellow-400 text-sm">★</span>
+                <span className="text-yellow-400 text-sm">★</span>
+                <span className="text-yellow-400 text-sm">★</span>
               </div>
 
               <p className="text-sm font-medium text-neutral-900">
