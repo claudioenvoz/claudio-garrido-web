@@ -109,6 +109,21 @@ export default async function DetalleReservaPage({ params }: DetalleReservaProps
             {reserva.pagoExternoId && (
               <Fila etiqueta="ID de pago externo" valor={reserva.pagoExternoId} />
             )}
+            {reserva.ionixEstado && (
+              <Fila etiqueta="Estado Ionix" valor={reserva.ionixEstado} />
+            )}
+            {reserva.ionixMonto && (
+              <Fila etiqueta="Monto Ionix" valor={`$${reserva.ionixMonto.toLocaleString("es-CL")} CLP`} />
+            )}
+            {reserva.ionixAutorizacionId && (
+              <Fila etiqueta="Autorización Ionix" valor={reserva.ionixAutorizacionId} />
+            )}
+            {reserva.ionixGateway && (
+              <Fila etiqueta="Gateway Ionix" valor={reserva.ionixGateway} />
+            )}
+            {reserva.ionixPagadoEn && (
+              <Fila etiqueta="Pago Ionix" valor={new Date(reserva.ionixPagadoEn).toLocaleString("es-CL")} />
+            )}
 
             {reserva.comprobanteUrl && (
               <div className="mt-5 pt-5 border-t border-neutral-100">

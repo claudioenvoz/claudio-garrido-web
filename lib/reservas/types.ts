@@ -42,6 +42,15 @@ export interface Reserva {
   pagoExternoId?: string;
   ionixCustomerId?: string;
   ionixPaymentMethodId?: string;
+  ionixOrderId?: number;
+  ionixCommerceOrder?: string;
+  ionixEstado?: string;
+  ionixCheckoutUrl?: string;
+  ionixMonto?: number;
+  ionixAutorizacionId?: string;
+  ionixGateway?: string;
+  ionixPagadoEn?: string;
+  ionixIntento: number;
 
   // Estado
   estado: EstadoReserva;

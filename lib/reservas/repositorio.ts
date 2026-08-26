@@ -36,6 +36,15 @@ interface FilaReserva {
   google_calendar_event_id: string | null;
   ionix_customer_id: string | null;
   ionix_payment_method_id: string | null;
+  ionix_order_id: number | null;
+  ionix_commerce_order: string | null;
+  ionix_estado: string | null;
+  ionix_checkout_url: string | null;
+  ionix_monto: number | null;
+  ionix_autorizacion_id: string | null;
+  ionix_gateway: string | null;
+  ionix_pagado_en: string | null;
+  ionix_intento: number | null;
   origen: string;
   notas_internas: string | null;
   creado_en: string;
@@ -66,6 +75,15 @@ function filaAReserva(fila: FilaReserva): Reserva {
     googleCalendarEventId: fila.google_calendar_event_id,
     ionixCustomerId: fila.ionix_customer_id ?? undefined,
     ionixPaymentMethodId: fila.ionix_payment_method_id ?? undefined,
+    ionixOrderId: fila.ionix_order_id ?? undefined,
+    ionixCommerceOrder: fila.ionix_commerce_order ?? undefined,
+    ionixEstado: fila.ionix_estado ?? undefined,
+    ionixCheckoutUrl: fila.ionix_checkout_url ?? undefined,
+    ionixMonto: fila.ionix_monto ?? undefined,
+    ionixAutorizacionId: fila.ionix_autorizacion_id ?? undefined,
+    ionixGateway: fila.ionix_gateway ?? undefined,
+    ionixPagadoEn: fila.ionix_pagado_en ?? undefined,
+    ionixIntento: fila.ionix_intento ?? 0,
     origen: fila.origen,
     notasInternas: fila.notas_internas ?? undefined,
     creadoEn: fila.creado_en,
@@ -97,6 +115,15 @@ function reservaAFila(reserva: Reserva): FilaReserva {
     google_calendar_event_id: reserva.googleCalendarEventId,
     ionix_customer_id: reserva.ionixCustomerId ?? null,
     ionix_payment_method_id: reserva.ionixPaymentMethodId ?? null,
+    ionix_order_id: reserva.ionixOrderId ?? null,
+    ionix_commerce_order: reserva.ionixCommerceOrder ?? null,
+    ionix_estado: reserva.ionixEstado ?? null,
+    ionix_checkout_url: reserva.ionixCheckoutUrl ?? null,
+    ionix_monto: reserva.ionixMonto ?? null,
+    ionix_autorizacion_id: reserva.ionixAutorizacionId ?? null,
+    ionix_gateway: reserva.ionixGateway ?? null,
+    ionix_pagado_en: reserva.ionixPagadoEn ?? null,
+    ionix_intento: reserva.ionixIntento,
     origen: reserva.origen,
     notas_internas: reserva.notasInternas ?? null,
     creado_en: reserva.creadoEn,
@@ -129,6 +156,22 @@ export async function obtenerPorId(id: string): Promise<Reserva | null> {
 
   if (error) {
     throw new Error(`[Supabase] Error al obtener la reserva ${id}: ${error.message}`);
+  }
+
+  return data ? filaAReserva(data as FilaReserva) : null;
+}
+
+export async function obtenerPorIonixOrderId(
+  orderId: number
+): Promise<Reserva | null> {
+  const { data, error } = await supabaseServidor
+    .from("reservas")
+    .select()
+    .eq("ionix_order_id", orderId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`[Supabase] Error al obtener reserva por orden Ionix: ${error.message}`);
   }
 
   return data ? filaAReserva(data as FilaReserva) : null;
@@ -182,6 +225,71 @@ export async function actualizar(
   }
 
   return filaAReserva(data as FilaReserva);
+}
+
+/**
+ * Confirma un pago Ionix sólo si la reserva sigue pendiente. El filtro de
+ * estado evita que reintentos del webhook confirmen dos veces la misma reserva.
+ */
+export async function confirmarPagoIonix(
+  id: string,
+  cambios: Pick<
+    Reserva,
+    | "pagoExternoId"
+    | "metodoPago"
+    | "ionixEstado"
+    | "ionixAutorizacionId"
+    | "ionixGateway"
+    | "ionixPagadoEn"
+  >
+): Promise<Reserva | null> {
+  const actualizadoEn = new Date().toISOString();
+
+  const { data, error } = await supabaseServidor
+    .from("reservas")
+    .update({
+      pago_externo_id: cambios.pagoExternoId,
+      metodo_pago: cambios.metodoPago,
+      ionix_estado: cambios.ionixEstado,
+      ionix_autorizacion_id: cambios.ionixAutorizacionId ?? null,
+      ionix_gateway: cambios.ionixGateway ?? null,
+      ionix_pagado_en: cambios.ionixPagadoEn ?? null,
+      estado: "confirmada",
+      actualizado_en: actualizadoEn,
+    })
+    .eq("id", id)
+    .eq("estado", "pendiente_pago")
+    .select()
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`[Supabase] Error al confirmar pago Ionix: ${error.message}`);
+  }
+
+  return data ? filaAReserva(data as FilaReserva) : null;
+}
+
+/**
+ * Reclama atómicamente la creación del evento de Calendar. Sólo la primera
+ * llamada que encuentre el campo nulo obtiene la reserva; las concurrentes
+ * reciben null y no crean un segundo evento.
+ */
+export async function reclamarCreacionEventoCalendario(
+  id: string
+): Promise<Reserva | null> {
+  const { data, error } = await supabaseServidor
+    .from("reservas")
+    .update({ google_calendar_event_id: "__IONIX_CALENDAR_PENDING__" })
+    .eq("id", id)
+    .is("google_calendar_event_id", null)
+    .select()
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`[Supabase] Error al reclamar evento de Calendar: ${error.message}`);
+  }
+
+  return data ? filaAReserva(data as FilaReserva) : null;
 }
 
 // Utilidad exclusiva para pruebas locales — vacía todas las reservas.
