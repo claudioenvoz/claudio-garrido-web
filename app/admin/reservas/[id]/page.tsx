@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { obtenerPorId } from "@/lib/reservas/repositorio";
+import { listarClases, obtenerPorId } from "@/lib/reservas/repositorio";
 import EstadoBadge from "@/components/admin/EstadoBadge";
 import AccionesReserva from "@/components/admin/AccionesReserva";
 
@@ -25,6 +25,7 @@ export default async function DetalleReservaPage({ params }: DetalleReservaProps
   if (!reserva) {
     notFound();
   }
+  const clases = await listarClases(reserva.id);
 
   const esComprobanteImagen = reserva.comprobanteUrl?.startsWith("data:image/");
   const esComprobantePdf = reserva.comprobanteUrl?.startsWith("data:application/pdf");
@@ -65,6 +66,23 @@ export default async function DetalleReservaPage({ params }: DetalleReservaProps
             {reserva.comentarios && (
               <Fila etiqueta="Comentarios" valor={reserva.comentarios} />
             )}
+          </section>
+
+          <section className="rounded-2xl border border-neutral-200 p-6 md:p-8">
+            <h2 className="text-sm font-medium text-neutral-500 uppercase tracking-wide mb-4">
+              Clases del pack
+            </h2>
+            <div className="flex flex-col">
+              {clases.map((clase) => (
+                <div key={clase.id} className="grid grid-cols-2 md:grid-cols-5 gap-2 py-3 border-b border-neutral-100 last:border-0 text-sm">
+                  <span className="text-neutral-500">Clase {clase.numeroClase}</span>
+                  <span>{new Date(`${clase.fecha}T12:00:00Z`).toLocaleDateString("es-CL", { timeZone: "UTC" })}</span>
+                  <span>{clase.hora}</span>
+                  <span>{clase.estadoSincronizacion}</span>
+                  <span className="break-all text-neutral-500">{clase.googleCalendarEventId ?? "—"}</span>
+                </div>
+              ))}
+            </div>
           </section>
 
           <section className="rounded-2xl border border-neutral-200 p-6 md:p-8">
@@ -169,7 +187,11 @@ export default async function DetalleReservaPage({ params }: DetalleReservaProps
             />
           </section>
 
-          <AccionesReserva reservaId={reserva.id} estadoActual={reserva.estado} />
+          <AccionesReserva
+            reservaId={reserva.id}
+            estadoActual={reserva.estado}
+            esPackRecurrente={reserva.planId !== "individual"}
+          />
         </div>
       </div>
     </main>

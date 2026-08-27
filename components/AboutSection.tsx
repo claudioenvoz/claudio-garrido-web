@@ -3,16 +3,17 @@ import Link from "next/link";
 
 export default function AboutSection() {
   return (
-    <section id="sobre-mi" className="w-full scroll-mt-20">
+    <section className="w-full bg-white border-y border-neutral-200">
       <div className="mx-auto max-w-7xl px-6 md:px-10">
-        <div className="flex flex-col md:flex-row md:items-center gap-10 md:gap-12 pt-20 md:pt-32 pb-16 md:pb-24">
-          <div className="w-full md:w-1/2">
+        <div className="py-16 md:py-[120px]">
+          <div id="sobre-mi" className="grid grid-cols-1 md:grid-cols-2 items-center gap-12 md:gap-16">
+          <div className="w-full">
             <div
               className="
                 relative w-full
                 aspect-[4/5]
                 bg-neutral-100
-                overflow-hidden
+                overflow-hidden rounded-2xl border border-neutral-200
               "
             >
               <Image
@@ -24,12 +25,12 @@ export default function AboutSection() {
             </div>
           </div>
 
-          <div className="w-full md:w-1/2">
-            <p className="text-sm md:text-base tracking-[0.2em] uppercase text-neutral-500 mb-5">
+          <div className="w-full">
+            <p className="text-xs font-semibold tracking-[0.12em] uppercase text-neutral-500 mb-5">
               Conoce a Claudio
             </p>
 
-            <h2 className="text-3xl md:text-4xl lg:text-[2.75rem] leading-[1.15] font-medium text-neutral-900 mb-6">
+            <h2 className="text-3xl md:text-4xl leading-[1.2] tracking-[-0.02em] font-semibold text-neutral-950 mb-6">
               Más de siete años ayudando a personas a descubrir su potencial
               musical.
             </h2>
@@ -48,7 +49,7 @@ export default function AboutSection() {
               </p>
             </div>
 
-            <div className="flex items-start gap-8 md:gap-12 mb-10">
+            <div className="grid grid-cols-3 gap-5 md:gap-8 border-t border-neutral-200 pt-8 mb-10">
               <div>
                 <p className="text-3xl md:text-4xl font-medium text-neutral-900 mb-1">
                   7+
@@ -78,7 +79,7 @@ export default function AboutSection() {
     bg-neutral-900 text-white
     px-7 py-3.5
     text-sm md:text-base font-medium
-    rounded-full
+                rounded-lg
     transition-colors duration-200
     hover:bg-neutral-800
     focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900
@@ -86,6 +87,7 @@ export default function AboutSection() {
 >
   Conocer mi historia
 </Link>
+          </div>
           </div>
         </div>
       </div>

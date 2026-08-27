@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import type { Reserva } from "@/lib/reservas/types";
+import { formatearFechaRecurrente, generarFechasRecurrentes } from "@/lib/reservas/recurrencia";
 
 /*
  * PÁGINA: /servicios/canto/reserva
@@ -166,6 +167,13 @@ export default function ReservaWizard() {
   const selectedPlanData =
     plans.find((p) => p.id === selectedPlan) ?? null;
 
+  const fechasRecurrentes = useMemo(
+    () => selectedDate && selectedPlan
+      ? generarFechasRecurrentes(toISODate(selectedDate), selectedPlan)
+      : [],
+    [selectedDate, selectedPlan],
+  );
+
   /*
    * Cuando se elige una fecha, consulta la disponibilidad real.
    * La API consulta Google Calendar y devuelve cada bloque con:
@@ -192,7 +200,7 @@ export default function ReservaWizard() {
     setCargandoDisponibilidad(true);
     setErrorDisponibilidad(null);
 
-    fetch(`/api/reservas/disponibilidad?fecha=${fecha}`)
+    fetch(`/api/reservas/disponibilidad?fecha=${fecha}&planId=${selectedPlan ?? "individual"}`)
       .then(async (respuesta) => {
         const data = await respuesta.json();
 
@@ -230,7 +238,7 @@ export default function ReservaWizard() {
     return () => {
       activo = false;
     };
-  }, [selectedDate]);
+  }, [selectedDate, selectedPlan]);
 
   const canGoNext =
     (step === 1 && selectedPlan !== null) ||
@@ -446,7 +454,13 @@ export default function ReservaWizard() {
 
   return (
     <main className="w-full">
-      <div className="mx-auto max-w-3xl px-6 md:px-10 py-16 md:py-24">
+      <div
+        className={`mx-auto max-w-3xl px-6 md:px-10 ${
+          !reservaCreada && (step === 1 || step === 2)
+            ? "pt-2 pb-16 md:pt-3 md:pb-24"
+            : "py-16 md:py-24"
+        }`}
+      >
         {reservaCreada ? (
           <div className="animate-fade-in-up">
             <div className="text-center mb-10">
@@ -793,7 +807,11 @@ export default function ReservaWizard() {
         ) : (
           <>
             {/* Indicador de paso — minimalista, sin librerías */}
-            <div className="flex items-center justify-center gap-2 mb-14 animate-fade-in-up">
+            <div
+              className={`flex items-center justify-center gap-2 animate-fade-in-up ${
+                step === 2 ? "mb-9" : "mb-14"
+              }`}
+            >
               {stepLabels.map((label, index) => {
                 const stepNumber = index + 1;
                 const isActive = stepNumber === step;
@@ -906,11 +924,11 @@ export default function ReservaWizard() {
                   Elige una fecha
                 </h1>
 
-                <p className="text-base md:text-lg text-neutral-600 leading-relaxed text-center mb-12">
+                <p className="text-base md:text-lg text-neutral-600 leading-relaxed text-center mb-8">
                   Selecciona el día que prefieras para tu clase.
                 </p>
 
-                <div className="rounded-2xl border border-neutral-200 p-6 md:p-8">
+                <div className="rounded-2xl border border-neutral-200 px-6 py-3 md:px-8 md:py-4">
                   <div className="flex items-center justify-between mb-6">
                     <button
                       type="button"
@@ -989,7 +1007,7 @@ export default function ReservaWizard() {
                           disabled={isBlocked}
                           onClick={() => seleccionarFecha(date)}
                           className={`
-                            aspect-square rounded-xl text-sm font-medium
+                            aspect-[8/5] min-h-9 rounded-xl text-sm font-medium
                             transition-colors duration-200
                             focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900
                             ${
@@ -1007,6 +1025,20 @@ export default function ReservaWizard() {
                     })}
                   </div>
                 </div>
+
+                {selectedPlanData && selectedPlan !== "individual" && fechasRecurrentes.length > 0 && (
+                  <div className="mt-5 rounded-2xl border border-neutral-200 bg-neutral-50 p-5">
+                    <p className="font-medium text-neutral-900">
+                      Tu {selectedPlanData.name} incluye {fechasRecurrentes.length} clases semanales.
+                    </p>
+                    <p className="mt-2 text-sm text-neutral-600">Tus clases quedarán programadas para:</p>
+                    <ul className="mt-3 grid gap-1 text-sm text-neutral-700 sm:grid-cols-2">
+                      {fechasRecurrentes.map((fecha) => (
+                        <li key={fecha} className="capitalize">{formatearFechaRecurrente(fecha)}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             )}
 
@@ -1029,6 +1061,12 @@ export default function ReservaWizard() {
                 <p className="text-sm text-neutral-500 text-center mb-10">
                   Los horarios mostrados corresponden a tu horario local de São Paulo.
                 </p>
+
+                {selectedPlan !== "individual" && (
+                  <div className="mb-6 rounded-2xl border border-neutral-200 bg-neutral-50 p-5 text-sm leading-relaxed text-neutral-600">
+                    El horario que elijas se aplicará a todas las clases de tu pack. Tus clases se realizarán semanalmente, en las fechas indicadas anteriormente, siempre a la misma hora.
+                  </div>
+                )}
 
                 {cargandoDisponibilidad && (
                   <div className="rounded-2xl border border-neutral-200 p-8 text-center">
@@ -1336,7 +1374,11 @@ export default function ReservaWizard() {
             )}
 
             {/* Navegación entre pasos */}
-            <div className="flex items-center justify-between mt-12">
+            <div
+              className={`flex items-center justify-between ${
+                step === 2 ? "mt-3" : "mt-12"
+              }`}
+            >
               {step > 1 ? (
                 <button
                   type="button"

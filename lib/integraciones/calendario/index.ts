@@ -5,6 +5,7 @@
 
 import { google } from "googleapis";
 import type { Reserva } from "@/lib/reservas/types";
+import { construirFechaHoraSantiagoISO } from "./disponibilidad";
 
 const VALOR_FICTICIO_EMAIL =
   "ficticio@ficticio.iam.gserviceaccount.com";
@@ -55,7 +56,7 @@ const ZONA_HORARIA = "America/Santiago";
 function calcularRangoEvento(
   reserva: Pick<Reserva, "fecha" | "hora" | "duracionMinutos">
 ) {
-  const inicio = new Date(`${reserva.fecha}T${reserva.hora}:00`);
+  const inicio = new Date(construirFechaHoraSantiagoISO(reserva.fecha, reserva.hora));
 
   const fin = new Date(
     inicio.getTime() + reserva.duracionMinutos * 60 * 1000
@@ -76,7 +77,8 @@ export interface CalendarProvider {
   ): Promise<string[]>;
 
   crearEvento(
-    reserva: Reserva
+    reserva: Reserva,
+    eventId?: string,
   ): Promise<{ eventId: string }>;
 
   cancelarEvento(
@@ -145,15 +147,18 @@ export const googleCalendarProvider: CalendarProvider = {
       .filter(Boolean) as string[];
   },
 
-  async crearEvento(reserva) {
+  async crearEvento(reserva, eventId) {
     const { calendarId } = obtenerCredenciales();
     const calendar = obtenerClienteCalendar();
 
     const { inicio, fin } = calcularRangoEvento(reserva);
 
-    const respuesta = await calendar.events.insert({
-      calendarId,
-      requestBody: {
+    let respuesta;
+    try {
+      respuesta = await calendar.events.insert({
+        calendarId,
+        requestBody: {
+          ...(eventId ? { id: eventId } : {}),
         summary: `${reserva.planNombre} — ${reserva.nombre}`,
 
         description:
@@ -175,8 +180,14 @@ export const googleCalendarProvider: CalendarProvider = {
           dateTime: fin.toISOString(),
           timeZone: ZONA_HORARIA,
         },
-      },
-    });
+        },
+      });
+    } catch (error) {
+      if (eventId && (error as { code?: number }).code === 409) {
+        return { eventId };
+      }
+      throw error;
+    }
 
     if (!respuesta.data.id) {
       throw new Error(
@@ -193,9 +204,10 @@ export const googleCalendarProvider: CalendarProvider = {
     const { calendarId } = obtenerCredenciales();
     const calendar = obtenerClienteCalendar();
 
-    await calendar.events.delete({
-      calendarId,
-      eventId,
-    });
+    try {
+      await calendar.events.delete({ calendarId, eventId });
+    } catch (error) {
+      if ((error as { code?: number }).code !== 404) throw error;
+    }
   },
 };

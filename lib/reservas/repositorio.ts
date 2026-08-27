@@ -8,7 +8,7 @@
 // proyecto necesita cambiar.
 
 import { supabaseServidor } from "@/lib/supabase/servidor";
-import type { EstadoReserva, Reserva } from "./types";
+import type { EstadoReserva, Reserva, ReservaClase } from "./types";
 
 // ---------- Mapeo entre las columnas snake_case de la tabla y el tipo
 // Reserva (camelCase) que usa el resto del proyecto ----------
@@ -51,11 +51,39 @@ interface FilaReserva {
   actualizado_en: string;
 }
 
+interface FilaReservaClase {
+  id: string;
+  reserva_id: string;
+  numero_clase: number;
+  fecha: string;
+  hora: string;
+  duracion_minutos: number;
+  google_calendar_event_id: string | null;
+  estado_sincronizacion: ReservaClase["estadoSincronizacion"];
+  creado_en: string;
+  actualizado_en: string;
+}
+
+function filaAReservaClase(fila: FilaReservaClase): ReservaClase {
+  return {
+    id: fila.id,
+    reservaId: fila.reserva_id,
+    numeroClase: fila.numero_clase,
+    fecha: fila.fecha,
+    hora: fila.hora.slice(0, 5),
+    duracionMinutos: fila.duracion_minutos,
+    googleCalendarEventId: fila.google_calendar_event_id,
+    estadoSincronizacion: fila.estado_sincronizacion,
+    creadoEn: fila.creado_en,
+    actualizadoEn: fila.actualizado_en,
+  };
+}
+
 function filaAReserva(fila: FilaReserva): Reserva {
   return {
     id: fila.id,
     servicio: fila.servicio as Reserva["servicio"],
-    planId: fila.plan_id,
+    planId: fila.plan_id as Reserva["planId"],
     planNombre: fila.plan_nombre,
     planPrecio: fila.plan_precio,
     fecha: fila.fecha,
@@ -145,6 +173,77 @@ export async function crear(reserva: Reserva): Promise<Reserva> {
   }
 
   return filaAReserva(data as FilaReserva);
+}
+
+export async function crearConClases(
+  reserva: Reserva,
+  clases: ReservaClase[],
+): Promise<Reserva> {
+  const filasClases = clases.map((clase) => ({
+    id: clase.id,
+    numero_clase: clase.numeroClase,
+    fecha: clase.fecha,
+    hora: clase.hora,
+    duracion_minutos: clase.duracionMinutos,
+    creado_en: clase.creadoEn,
+    actualizado_en: clase.actualizadoEn,
+  }));
+
+  const { data, error } = await supabaseServidor.rpc("crear_reserva_con_clases", {
+    p_reserva: reservaAFila(reserva),
+    p_clases: filasClases,
+  });
+
+  if (error) {
+    throw new Error(`[Supabase] Error al crear reserva recurrente: ${error.message}`);
+  }
+
+  const fila = Array.isArray(data) ? data[0] : data;
+  return filaAReserva(fila as FilaReserva);
+}
+
+export async function listarClases(reservaId: string): Promise<ReservaClase[]> {
+  const { data, error } = await supabaseServidor
+    .from("reserva_clases")
+    .select()
+    .eq("reserva_id", reservaId)
+    .order("numero_clase", { ascending: true });
+
+  if (error) throw new Error(`[Supabase] Error al listar clases: ${error.message}`);
+  return (data as FilaReservaClase[]).map(filaAReservaClase);
+}
+
+export async function actualizarClase(
+  id: string,
+  cambios: Partial<Pick<ReservaClase, "googleCalendarEventId" | "estadoSincronizacion">>,
+): Promise<ReservaClase | null> {
+  const fila: Record<string, unknown> = { actualizado_en: new Date().toISOString() };
+  if ("googleCalendarEventId" in cambios) fila.google_calendar_event_id = cambios.googleCalendarEventId;
+  if (cambios.estadoSincronizacion) fila.estado_sincronizacion = cambios.estadoSincronizacion;
+
+  const { data, error } = await supabaseServidor
+    .from("reserva_clases")
+    .update(fila)
+    .eq("id", id)
+    .select()
+    .maybeSingle();
+
+  if (error) throw new Error(`[Supabase] Error al actualizar clase: ${error.message}`);
+  return data ? filaAReservaClase(data as FilaReservaClase) : null;
+}
+
+export async function reclamarSincronizacionClase(id: string): Promise<ReservaClase | null> {
+  const { data, error } = await supabaseServidor
+    .from("reserva_clases")
+    .update({ estado_sincronizacion: "creando", actualizado_en: new Date().toISOString() })
+    .eq("id", id)
+    .is("google_calendar_event_id", null)
+    .in("estado_sincronizacion", ["pendiente", "error"])
+    .select()
+    .maybeSingle();
+
+  if (error) throw new Error(`[Supabase] Error al reclamar clase: ${error.message}`);
+  return data ? filaAReservaClase(data as FilaReservaClase) : null;
 }
 
 export async function obtenerPorId(id: string): Promise<Reserva | null> {

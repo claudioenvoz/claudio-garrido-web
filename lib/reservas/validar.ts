@@ -2,6 +2,7 @@
 // Validación manual (sin librerías externas) del input para crear una reserva.
 
 import type { CrearReservaInput, Servicio } from "./types";
+import { esPlanReservaId, obtenerReglaPlan } from "./recurrencia";
 
 export interface ResultadoValidacion {
   valido: boolean;
@@ -67,8 +68,8 @@ export function validarCrearReserva(input: unknown): ResultadoValidacion {
     );
   }
 
-  if (!esTextoValido(body.planId)) {
-    errores.push('"planId" es obligatorio.');
+  if (!esTextoValido(body.planId) || !esPlanReservaId(body.planId)) {
+    errores.push('"planId" debe ser individual, mensual o bimensual.');
   }
 
   if (!esTextoValido(body.planNombre)) {
@@ -126,14 +127,16 @@ export function validarCrearReserva(input: unknown): ResultadoValidacion {
     return { valido: false, errores, data: null };
   }
 
+  const planId = body.planId as "individual" | "mensual" | "bimensual";
+  const reglaPlan = obtenerReglaPlan(planId);
   const data: CrearReservaInput = {
     servicio: body.servicio as Servicio,
-    planId: (body.planId as string).trim(),
-    planNombre: (body.planNombre as string).trim(),
-    planPrecio: (body.planPrecio as string).trim(),
+    planId,
+    planNombre: reglaPlan.nombre,
+    planPrecio: reglaPlan.precio,
     fecha: body.fecha as string,
     hora: body.hora as string,
-    duracionMinutos: body.duracionMinutos as number,
+    duracionMinutos: 60,
     nombre: (body.nombre as string).trim(),
     email: (body.email as string).trim().toLowerCase(),
     whatsapp: (body.whatsapp as string).trim(),

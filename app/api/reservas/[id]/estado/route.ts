@@ -11,9 +11,9 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { obtenerSesion } from "@/lib/supabase/servidorAuth";
-import { obtenerPorId, actualizar, crear } from "@/lib/reservas/repositorio";
-import type { EstadoReserva } from "@/lib/reservas/types";
-import { googleCalendarProvider } from "@/lib/integraciones/calendario";
+import { obtenerPorId, actualizar, crearConClases } from "@/lib/reservas/repositorio";
+import type { EstadoReserva, Reserva, ReservaClase } from "@/lib/reservas/types";
+import { cancelarEventosSerie, crearEventosPendientes } from "@/lib/reservas/sincronizarCalendario";
 
 type Accion = "aprobar" | "rechazar" | "cancelar" | "reagendar";
 
@@ -82,6 +82,12 @@ export async function PATCH(
   }
 
   if (accion === "reagendar") {
+    if (reserva.planId !== "individual") {
+      return NextResponse.json(
+        { error: "El reagendamiento de packs recurrentes debe gestionarse manualmente." },
+        { status: 409 },
+      );
+    }
     if (!nuevaFecha || !nuevaHora) {
       return NextResponse.json(
         { error: "Reagendar requiere nuevaFecha y nuevaHora." },
@@ -91,7 +97,7 @@ export async function PATCH(
 
     const ahora = new Date().toISOString();
 
-    const nuevaReserva = await crear({
+    const nuevaReservaBase: Reserva = {
       ...reserva,
       id: crypto.randomUUID(),
       fecha: nuevaFecha,
@@ -101,19 +107,27 @@ export async function PATCH(
       googleCalendarEventId: null,
       creadoEn: ahora,
       actualizadoEn: ahora,
-    });
+    };
+    const nuevaClase: ReservaClase = {
+      id: crypto.randomUUID(),
+      reservaId: nuevaReservaBase.id,
+      numeroClase: 1,
+      fecha: nuevaFecha,
+      hora: nuevaHora,
+      duracionMinutos: reserva.duracionMinutos,
+      googleCalendarEventId: null,
+      estadoSincronizacion: "pendiente",
+      creadoEn: ahora,
+      actualizadoEn: ahora,
+    };
+    const nuevaReserva = await crearConClases(nuevaReservaBase, [nuevaClase]);
 
     let advertenciaCalendario: string | undefined;
     let nuevaReservaFinal = nuevaReserva;
 
     try {
-      if (reserva.googleCalendarEventId) {
-        await googleCalendarProvider.cancelarEvento(reserva.googleCalendarEventId);
-      }
-      const { eventId } = await googleCalendarProvider.crearEvento(nuevaReserva);
-      nuevaReservaFinal =
-        (await actualizar(nuevaReserva.id, { googleCalendarEventId: eventId })) ??
-        nuevaReserva;
+      await crearEventosPendientes(nuevaReserva);
+      await cancelarEventosSerie(reserva.id);
     } catch (error) {
       advertenciaCalendario =
         "La reserva se reagendó correctamente, pero hubo un problema al sincronizar Google Calendar. Revísalo manualmente.";
@@ -136,21 +150,23 @@ export async function PATCH(
     );
   }
 
-  let advertenciaCalendario: string | undefined;
-
   try {
     if (accion === "aprobar") {
-      const { eventId } = await googleCalendarProvider.crearEvento(reserva);
-      await actualizar(reserva.id, { googleCalendarEventId: eventId });
+      await crearEventosPendientes(reserva);
     }
 
-    if ((accion === "rechazar" || accion === "cancelar") && reserva.googleCalendarEventId) {
-      await googleCalendarProvider.cancelarEvento(reserva.googleCalendarEventId);
+    if (accion === "rechazar" || accion === "cancelar") {
+      await cancelarEventosSerie(reserva.id);
     }
   } catch (error) {
-    advertenciaCalendario =
-      "El estado se actualizó correctamente, pero hubo un problema al sincronizar Google Calendar. Revísalo manualmente.";
     console.error(`[GoogleCalendar] Error al procesar "${accion}":`, error);
+    return NextResponse.json(
+      {
+        error:
+          "No se completó la sincronización con Google Calendar. El estado de la reserva no cambió; puedes reintentar la acción.",
+      },
+      { status: 502 },
+    );
   }
 
   const reservaActualizada = await actualizar(reserva.id, {
@@ -159,10 +175,7 @@ export async function PATCH(
   });
 
   return NextResponse.json(
-    {
-      ...reservaActualizada,
-      ...(advertenciaCalendario ? { advertencia: advertenciaCalendario } : {}),
-    },
+    reservaActualizada,
     { status: 200 }
   );
 }

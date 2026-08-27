@@ -4,9 +4,8 @@ import {
   actualizar,
   confirmarPagoIonix,
   obtenerPorIonixOrderId,
-  reclamarCreacionEventoCalendario,
 } from "@/lib/reservas/repositorio";
-import { googleCalendarProvider } from "@/lib/integraciones/calendario";
+import { crearEventosPendientes } from "@/lib/reservas/sincronizarCalendario";
 
 interface WebhookIonix {
   type?: string;
@@ -80,19 +79,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "La reserva no está en un estado confirmable." }, { status: 409 });
     }
 
-    if (!reservaConfirmada.googleCalendarEventId) {
-      const reclamada = await reclamarCreacionEventoCalendario(reservaConfirmada.id);
-      if (reclamada) {
-        try {
-          const { eventId } = await googleCalendarProvider.crearEvento(reclamada);
-          await actualizar(reclamada.id, { googleCalendarEventId: eventId });
-        } catch (error) {
-          // Permite reintentar si Calendar falla después de reclamar el slot.
-          await actualizar(reclamada.id, { googleCalendarEventId: null });
-          throw error;
-        }
-      }
-    }
+    await crearEventosPendientes(reservaConfirmada);
 
     return NextResponse.json({ ok: true });
   } catch (error) {

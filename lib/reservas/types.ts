@@ -15,12 +15,32 @@ export type EstadoReserva =
   | "expirada"
   | "completada";
 
+export type EstadoSincronizacionClase =
+  | "pendiente"
+  | "creando"
+  | "creado"
+  | "error"
+  | "cancelado";
+
+export interface ReservaClase {
+  id: string;
+  reservaId: string;
+  numeroClase: number;
+  fecha: string;
+  hora: string;
+  duracionMinutos: number;
+  googleCalendarEventId: string | null;
+  estadoSincronizacion: EstadoSincronizacionClase;
+  creadoEn: string;
+  actualizadoEn: string;
+}
+
 export interface Reserva {
   id: string;
 
   // Servicio y plan
   servicio: Servicio;
-  planId: string;
+  planId: "individual" | "mensual" | "bimensual";
   planNombre: string;
   planPrecio: string;
 
@@ -73,7 +93,7 @@ export interface Reserva {
 // No incluye id, estado, timestamps: eso lo asigna el backend.
 export interface CrearReservaInput {
   servicio: Servicio;
-  planId: string;
+  planId: "individual" | "mensual" | "bimensual";
   planNombre: string;
   planPrecio: string;
   fecha: string;

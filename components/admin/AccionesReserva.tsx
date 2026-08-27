@@ -7,6 +7,7 @@ import type { EstadoReserva } from "@/lib/reservas/types";
 interface AccionesReservaProps {
   reservaId: string;
   estadoActual: EstadoReserva;
+  esPackRecurrente: boolean;
 }
 
 type Accion = "aprobar" | "rechazar" | "cancelar" | "reagendar";
@@ -14,6 +15,7 @@ type Accion = "aprobar" | "rechazar" | "cancelar" | "reagendar";
 export default function AccionesReserva({
   reservaId,
   estadoActual,
+  esPackRecurrente,
 }: AccionesReservaProps) {
   const router = useRouter();
 
@@ -67,7 +69,7 @@ export default function AccionesReserva({
   const puedeCancelar = ["pendiente_pago", "pendiente_revision", "confirmada"].includes(
     estadoActual
   );
-  const puedeReagendar = estadoActual === "confirmada";
+  const puedeReagendar = estadoActual === "confirmada" && !esPackRecurrente;
 
   const sinAccionesDisponibles =
     !puedeAprobar && !puedeRechazar && !puedeCancelar && !puedeReagendar;
@@ -197,6 +199,12 @@ export default function AccionesReserva({
               </button>
             )}
           </div>
+
+          {estadoActual === "confirmada" && esPackRecurrente && (
+            <p className="mt-4 text-sm text-neutral-500">
+              El reagendamiento de packs recurrentes debe gestionarse manualmente.
+            </p>
+          )}
 
           {mostrandoReagendar && (
             <div className="mt-5 pt-5 border-t border-neutral-100 flex flex-col gap-4">
