@@ -4,9 +4,11 @@
 // la ruta de API (Etapa siguiente) solo la llama y traduce el resultado
 // a una respuesta.
 
-import type { Reserva } from "./types";
+import type { Reserva, ReservaClase } from "./types";
 import { validarCrearReserva } from "./validar";
-import { crear as guardarReserva } from "./repositorio";
+import { crearConClases as guardarReserva } from "./repositorio";
+import { generarFechasRecurrentes } from "./recurrencia";
+import { estaSerieDisponible } from "@/lib/integraciones/calendario/disponibilidad";
 
 export type ResultadoCrearReserva =
   | { exito: true; reserva: Reserva }
@@ -38,10 +40,17 @@ export async function crearReserva(
 
   const datos = resultado.data;
 
-  // TODO (etapa de integración con Cal.com/Google Calendar):
-  // acá se debe consultar disponibilidad real antes de crear la reserva,
-  // vía algo como `calendarProvider.estaDisponible(datos.fecha, datos.hora)`.
-  // Por ahora se asume siempre disponible.
+  const fechas = generarFechasRecurrentes(datos.fecha, datos.planId);
+  const disponible = await estaSerieDisponible(fechas, datos.hora, 60);
+
+  if (!disponible) {
+    return {
+      exito: false,
+      errores: [
+        "Ese horario ya no está disponible para todas las clases del pack. Elige otro horario.",
+      ],
+    };
+  }
 
   const ahora = new Date().toISOString();
 
@@ -87,7 +96,20 @@ export async function crearReserva(
     actualizadoEn: ahora,
   };
 
-  const guardada = await guardarReserva(reserva);
+  const clases: ReservaClase[] = fechas.map((fecha, index) => ({
+    id: crypto.randomUUID(),
+    reservaId: reserva.id,
+    numeroClase: index + 1,
+    fecha,
+    hora: datos.hora,
+    duracionMinutos: 60,
+    googleCalendarEventId: null,
+    estadoSincronizacion: "pendiente",
+    creadoEn: ahora,
+    actualizadoEn: ahora,
+  }));
+
+  const guardada = await guardarReserva(reserva, clases);
 
   return { exito: true, reserva: guardada };
 }

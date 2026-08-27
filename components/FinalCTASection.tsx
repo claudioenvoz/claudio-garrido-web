@@ -6,13 +6,13 @@ export default function FinalCTASection() {
 
   return (
 
-    <section id="contacto" className="w-full bg-white scroll-mt-20">
+    <section id="contacto" className="w-full bg-[#f9f9f9] scroll-mt-20">
 
-      <div className="mx-auto max-w-7xl px-6 md:px-10 py-16 md:py-24">
+      <div className="mx-auto max-w-7xl px-6 md:px-10 py-16 md:py-[120px]">
 
-        <div className="max-w-2xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto text-center bg-[#f3f3f4] border border-neutral-200 rounded-2xl px-6 py-14 md:px-20 md:py-20">
 
-          <h2 className="text-3xl md:text-5xl leading-[1.15] font-medium text-neutral-900 mb-6">
+          <h2 className="text-3xl md:text-5xl leading-[1.1] tracking-[-0.02em] font-semibold text-neutral-950 mb-6">
 
             Comienza hoy tu camino musical.
 
@@ -50,7 +50,7 @@ export default function FinalCTASection() {
 
                 text-base md:text-lg font-medium
 
-                rounded-full
+                rounded-lg
 
                 transition-colors duration-200
 
@@ -88,7 +88,7 @@ export default function FinalCTASection() {
 
                 text-base md:text-lg font-medium
 
-                rounded-full
+                rounded-lg
 
                 transition-colors duration-200
 

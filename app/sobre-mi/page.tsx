@@ -8,7 +8,7 @@ export default function SobreMiPage() {
       {/* HERO */}
 
       <section className="w-full">
-        <div className="mx-auto max-w-7xl px-6 md:px-10 py-20 md:py-28">
+        <div className="mx-auto max-w-7xl px-6 md:px-10 pt-2 pb-20 md:pt-3 md:pb-28">
 
           <div className="grid md:grid-cols-2 gap-14 items-center">
 

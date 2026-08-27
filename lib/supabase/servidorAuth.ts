@@ -34,7 +34,8 @@ export function crearClienteServidorConSesion() {
 export async function obtenerSesion() {
   const supabase = crearClienteServidorConSesion();
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  return session;
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  return user ? { user } : null;
 }

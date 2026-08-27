@@ -31,19 +31,19 @@ export async function middleware(request: NextRequest) {
   );
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const esRutaLogin = request.nextUrl.pathname === "/admin/login";
   const esRutaAdmin = request.nextUrl.pathname.startsWith("/admin");
 
-  if (esRutaAdmin && !esRutaLogin && !session) {
+  if (esRutaAdmin && !esRutaLogin && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/login";
     return NextResponse.redirect(url);
   }
 
-  if (esRutaLogin && session) {
+  if (esRutaLogin && user) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin";
     return NextResponse.redirect(url);

@@ -5,7 +5,7 @@ export default function Hero() {
   return (
     <section id="canto-hero" className="w-full">
       <div className="mx-auto max-w-7xl px-6 md:px-10">
-        <div className="flex flex-col md:flex-row md:items-center gap-10 md:gap-12 py-16 md:py-24">
+        <div className="flex flex-col md:flex-row md:items-center gap-10 md:gap-12 pt-5 pb-16 md:pt-9 md:pb-24">
           <div
             className="
               order-2 md:order-1

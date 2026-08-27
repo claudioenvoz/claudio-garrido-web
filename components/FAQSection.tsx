@@ -46,9 +46,9 @@ export default function FAQSection() {
   };
 
   return (
-    <section className="w-full">
-      <div className="mx-auto max-w-7xl px-6 md:px-10 py-16 md:py-24">
-        <h2 className="text-3xl md:text-4xl lg:text-[2.75rem] leading-[1.15] font-medium text-neutral-900 mb-14 md:mb-20 text-center">
+    <section id="faq" className="w-full bg-white border-t border-neutral-200 scroll-mt-20">
+      <div className="mx-auto max-w-7xl px-6 md:px-10 py-16 md:py-[120px]">
+        <h2 className="text-3xl md:text-4xl leading-[1.2] tracking-[-0.02em] font-semibold text-neutral-950 mb-12 text-center">
           Preguntas frecuentes
         </h2>
 
@@ -68,7 +68,7 @@ export default function FAQSection() {
                     w-full
                     flex items-center justify-between
                     gap-6
-                    py-6
+                      py-7
                     text-left
                     focus-visible:outline
                     focus-visible:outline-2
@@ -77,7 +77,7 @@ export default function FAQSection() {
                   "
                   aria-expanded={isOpen}
                 >
-                  <span className="text-base md:text-lg text-neutral-900 font-medium">
+                  <span className="text-base md:text-lg text-neutral-950 font-semibold transition-colors hover:text-yellow-700">
                     {faq.question}
                   </span>
 

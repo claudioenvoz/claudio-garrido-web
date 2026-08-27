@@ -20,10 +20,10 @@ const testimonials = [
 
 export default function TestimonialsSection() {
   return (
-    <section className="w-full">
-      <div className="mx-auto max-w-7xl px-6 md:px-10 py-16 md:py-24">
+    <section id="testimonios" className="w-full bg-[#f9f9f9] scroll-mt-20">
+      <div className="mx-auto max-w-7xl px-6 md:px-10 py-16 md:py-[120px]">
         <div className="text-center max-w-2xl mx-auto mb-14 md:mb-20">
-          <h2 className="text-3xl md:text-4xl lg:text-[2.75rem] leading-[1.15] font-medium text-neutral-900 mb-6">
+          <h2 className="text-3xl md:text-4xl leading-[1.2] tracking-[-0.02em] font-semibold text-neutral-950 mb-6">
             Lo que dicen mis estudiantes
           </h2>
 
@@ -38,35 +38,25 @@ export default function TestimonialsSection() {
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.name}
-              className="flex flex-col items-center text-center rounded-2xl border border-neutral-200 p-8"
+              className="flex flex-col rounded-2xl border border-neutral-200 bg-white p-8"
             >
-              <div className="relative w-16 h-16 rounded-full bg-neutral-100 overflow-hidden mb-5">
-                <Image
-                  src={testimonial.image}
-                  alt={testimonial.name}
-                  fill
-                  className="object-cover"
-                />
+              <div className="flex gap-1 text-yellow-500 mb-6" aria-label="5 estrellas de 5">
+                {[1, 2, 3, 4, 5].map((star) => <span key={star}>★</span>)}
               </div>
 
-              <p className="text-sm md:text-base text-neutral-600 leading-relaxed mb-5">
-                {testimonial.text}
+              <p className="text-base text-neutral-600 leading-relaxed italic flex-1 mb-7">
+                “{testimonial.text}”
               </p>
 
-              <div
-                className="flex items-center justify-center gap-1 mb-3"
-                aria-label="5 estrellas de 5"
-              >
-                <span className="text-yellow-400 text-sm">★</span>
-                <span className="text-yellow-400 text-sm">★</span>
-                <span className="text-yellow-400 text-sm">★</span>
-                <span className="text-yellow-400 text-sm">★</span>
-                <span className="text-yellow-400 text-sm">★</span>
+              <div className="flex items-center gap-4 border-t border-neutral-200 pt-6">
+                <div className="relative w-12 h-12 rounded-full bg-neutral-100 overflow-hidden">
+                  <Image src={testimonial.image} alt={testimonial.name} fill className="object-cover" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-neutral-950">{testimonial.name}</p>
+                  <p className="text-xs uppercase tracking-wider text-neutral-500 mt-1">Estudiante</p>
+                </div>
               </div>
-
-              <p className="text-sm font-medium text-neutral-900">
-                {testimonial.name}
-              </p>
             </div>
           ))}
         </div>
