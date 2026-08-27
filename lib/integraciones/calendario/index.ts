@@ -6,6 +6,7 @@
 import { google } from "googleapis";
 import type { Reserva } from "@/lib/reservas/types";
 import { construirFechaHoraSantiagoISO } from "./disponibilidad";
+import { normalizarPrivateKey } from "./credenciales";
 
 const VALOR_FICTICIO_EMAIL =
   "ficticio@ficticio.iam.gserviceaccount.com";
@@ -34,7 +35,7 @@ function obtenerCredenciales() {
 
   return {
     email: email ?? VALOR_FICTICIO_EMAIL,
-    privateKey: (privateKey ?? VALOR_FICTICIO_KEY).replace(/\\n/g, "\n"),
+    privateKey: normalizarPrivateKey(privateKey ?? VALOR_FICTICIO_KEY),
     calendarId: calendarId ?? VALOR_FICTICIO_CALENDAR_ID,
   };
 }
