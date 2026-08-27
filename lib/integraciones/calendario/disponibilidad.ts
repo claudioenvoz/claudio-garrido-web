@@ -1,4 +1,5 @@
 import { google } from "googleapis";
+import { normalizarPrivateKey } from "./credenciales";
 
 const TIME_ZONE_SANTIAGO = "America/Santiago";
 const TIME_ZONE_SAO_PAULO = "America/Sao_Paulo";
@@ -6,14 +7,6 @@ const TIME_SLOTS = [
   "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00",
   "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00",
 ];
-
-function normalizarPrivateKey(privateKey: string): string {
-  let key = privateKey.trim();
-  if ((key.startsWith('"') && key.endsWith('"')) || (key.startsWith("'") && key.endsWith("'"))) {
-    key = key.slice(1, -1);
-  }
-  return key.replace(/\\n/g, "\n").replace(/\r\n/g, "\n").trim();
-}
 
 function obtenerConfiguracion() {
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
