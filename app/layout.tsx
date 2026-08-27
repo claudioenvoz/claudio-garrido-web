@@ -22,9 +22,34 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Claudio En Voz | Clases de Canto, Piano y Formación Musical",
+  metadataBase: new URL("https://claudiogarrido.com"),
+  title: "Claudio Garrido | Clases de Piano y Canto",
   description:
-    "Clases de canto, Programa Piano Funcional, clases de piano y masterclasses con Claudio Garrido. Aprende música con un acompañamiento cercano, claro y profesional.",
+    "Clases de piano y canto online y presenciales, con un enfoque personalizado para aprender música de forma práctica, cercana y a tu propio ritmo.",
+  openGraph: {
+    type: "website",
+    locale: "es_CL",
+    url: "https://claudiogarrido.com",
+    siteName: "Claudio Garrido",
+    title: "Claudio Garrido | Clases de Piano y Canto",
+    description:
+      "Clases de piano y canto online y presenciales, con un enfoque personalizado para aprender música de forma práctica, cercana y a tu propio ritmo.",
+    images: [
+      {
+        url: "/images/hero.jpg",
+        width: 1440,
+        height: 1080,
+        alt: "Claudio Garrido",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Claudio Garrido | Clases de Piano y Canto",
+    description:
+      "Clases de piano y canto online y presenciales, con un enfoque personalizado para aprender música de forma práctica, cercana y a tu propio ritmo.",
+    images: ["/images/hero.jpg"],
+  },
 };
 
 export default function RootLayout({

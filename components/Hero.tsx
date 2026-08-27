@@ -5,7 +5,7 @@ export default function Hero() {
   return (
     <section id="inicio" className="w-full scroll-mt-20 bg-[#f9f9f9]">
       <div className="mx-auto max-w-7xl px-6 md:px-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center pt-0.5 pb-16 md:pt-[18px] md:pb-24 lg:min-h-[calc(100vh-80px)]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-[60px] md:gap-12 lg:gap-16 items-center pt-4 pb-6 md:pt-[18px] md:pb-24 lg:min-h-[calc(100vh-80px)]">
           <div
             className="
               order-2 lg:order-1
@@ -21,13 +21,13 @@ export default function Hero() {
               Aprende música con una metodología clara, práctica y cercana.
             </h1>
 
-            <p className="text-base md:text-lg text-neutral-600 leading-[1.65] max-w-xl mb-9">
+            <p className="text-base md:text-lg text-neutral-600 leading-[1.65] max-w-xl mb-11 md:mb-9">
               Clases de canto, piano y formación musical para personas que
               desean desarrollar sus habilidades musicales con un
               acompañamiento profesional y personalizado.
             </p>
 
-            <div className="order-3 md:order-none flex flex-col sm:flex-row items-center gap-4 mb-10 w-full sm:w-auto">
+            <div className="order-3 md:order-none flex flex-col sm:flex-row items-center gap-x-4 gap-y-5 md:gap-4 mt-5 md:mt-0 mb-12 md:mb-10 w-full sm:w-auto">
               <Link
                 href="/reservar"
                 className="
@@ -60,7 +60,7 @@ export default function Hero() {
               </Link>
             </div>
 
-            <ul className="flex flex-col items-center lg:items-start gap-3">
+            <ul className="flex flex-col items-center lg:items-start gap-[15px] md:gap-3">
               <li className="flex items-center gap-2 text-sm md:text-base text-neutral-600">
                 <span className="text-yellow-500" aria-hidden="true">✓</span>
                 Más de 7 años enseñando música
