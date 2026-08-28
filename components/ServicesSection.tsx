@@ -16,9 +16,9 @@ const services = [
   },
   {
     title: "Masterclasses",
-    text: "Clases abiertas donde aprenderás herramientas prácticas sobre música, piano e interpretación.",
-    buttonLabel: "Ver próximas fechas",
-    image: "/images/private-piano.jpg",
+    text: "III Edición — Masterclass gratuita de iniciación en piano y repertorio popular. Sábado 12 de septiembre · 18:00 hrs. Chile.",
+    buttonLabel: "Inscríbete gratis",
+    image: "/images/masterclass-iii-edicion.png",
   },
 ];
 

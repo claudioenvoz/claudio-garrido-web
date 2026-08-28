@@ -66,6 +66,57 @@ export default function MasterclassesPage() {
 
     <main className="min-h-screen bg-white">
 
+      {/* PRÓXIMA MASTERCLASS — INICIO DEL BLOQUE TEMPORAL */}
+
+      <section className="w-full border-b border-neutral-200 bg-neutral-50">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-6 py-12 md:grid-cols-2 md:gap-14 md:px-10 md:py-6">
+          <div className="mx-auto w-full max-w-xl overflow-hidden rounded-2xl bg-white shadow-sm md:w-fit">
+            <Image
+              src="/images/masterclass-iii-edicion.png"
+              alt="III Masterclass gratuita de Iniciación en Piano y Repertorio Popular"
+              width={1080}
+              height={1350}
+              className="h-auto w-full object-contain md:max-h-[calc(100svh-9rem)] md:w-auto md:max-w-full"
+              priority
+            />
+          </div>
+
+          <div className="text-center md:text-left">
+            <p className="mb-5 text-sm font-medium uppercase tracking-[0.2em] text-neutral-500">
+              III Masterclass Gratuita
+            </p>
+
+            <h1 className="mb-6 text-4xl font-medium leading-[1.1] text-neutral-900 md:text-5xl">
+              Iniciación en Piano y Repertorio Popular
+            </h1>
+
+            <p className="mb-8 text-lg leading-relaxed text-neutral-600">
+              Aprende las bases para comenzar a tocar tus primeras canciones.
+            </p>
+
+            <div className="mb-9 space-y-3 text-base text-neutral-700 md:text-lg">
+              <p className="font-medium text-neutral-900">
+                Sábado 12 de septiembre de 2026
+              </p>
+              <p>18:00 hrs. Chile</p>
+              <p>Online · En vivo vía Zoom</p>
+              <p className="font-medium text-neutral-900">Acceso gratuito</p>
+            </div>
+
+            <a
+              href="https://forms.gle/SpU4HzaHKG6n488v8"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex w-full items-center justify-center rounded-full bg-neutral-900 px-8 py-4 text-base font-medium text-white transition-colors hover:bg-neutral-800 sm:w-auto"
+            >
+              INSCRÍBETE GRATIS
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* PRÓXIMA MASTERCLASS — FIN DEL BLOQUE TEMPORAL */}
+
       {/* HERO */}
 
       <section className="w-full">
