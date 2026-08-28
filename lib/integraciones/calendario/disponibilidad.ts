@@ -2,7 +2,6 @@ import { google } from "googleapis";
 import { normalizarPrivateKey } from "./credenciales";
 
 const TIME_ZONE_SANTIAGO = "America/Santiago";
-const TIME_ZONE_SAO_PAULO = "America/Sao_Paulo";
 const TIME_SLOTS = [
   "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00",
   "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00",
@@ -37,17 +36,6 @@ export function construirFechaHoraSantiagoISO(fecha: string, hora: string): stri
   return `${fecha}T${hora}:00${obtenerOffsetZonaHoraria(fecha, TIME_ZONE_SANTIAGO)}`;
 }
 
-function convertirSantiagoASaoPaulo(fecha: string, hora: string): string {
-  const partes = new Intl.DateTimeFormat("en-CA", {
-    timeZone: TIME_ZONE_SAO_PAULO,
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(new Date(construirFechaHoraSantiagoISO(fecha, hora)));
-  const parte = (tipo: string) => partes.find((item) => item.type === tipo)?.value ?? "";
-  return `${parte("hour")}:${parte("minute")}`;
-}
-
 export function esFechaCalendarioValida(fecha: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return false;
   const [year, month, day] = fecha.split("-").map(Number);
@@ -57,7 +45,10 @@ export function esFechaCalendarioValida(fecha: string): boolean {
 
 export interface HorarioSerie {
   hora: string;
-  horaSaoPaulo: string;
+  clases: {
+    fecha: string;
+    inicio: string;
+  }[];
   disponible: boolean;
 }
 
@@ -82,8 +73,12 @@ export async function obtenerDisponibilidadSerie(
   const ocupados = respuesta.data.calendars?.[calendarId]?.busy ?? [];
 
   return TIME_SLOTS.map((hora) => {
-    const disponible = fechas.every((fecha) => {
-      const inicio = new Date(construirFechaHoraSantiagoISO(fecha, hora));
+    const clases = fechas.map((fecha) => ({
+      fecha,
+      inicio: new Date(construirFechaHoraSantiagoISO(fecha, hora)).toISOString(),
+    }));
+    const disponible = clases.every(({ inicio: inicioISO }) => {
+      const inicio = new Date(inicioISO);
       const fin = new Date(inicio.getTime() + duracionMinutos * 60 * 1000);
       return !ocupados.some((bloque) => {
         if (!bloque.start || !bloque.end) return false;
@@ -92,7 +87,7 @@ export async function obtenerDisponibilidadSerie(
     });
     return {
       hora,
-      horaSaoPaulo: convertirSantiagoASaoPaulo(primeraFecha, hora),
+      clases,
       disponible,
     };
   });

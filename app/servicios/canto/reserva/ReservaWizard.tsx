@@ -5,6 +5,13 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import type { Reserva } from "@/lib/reservas/types";
 import { formatearFechaRecurrente, generarFechasRecurrentes } from "@/lib/reservas/recurrencia";
+import {
+  detectarZonaHorariaUsuario,
+  formatearFechaHoraEnZona,
+  formatearHoraEnZona,
+  obtenerNombreZonaHoraria,
+  ZONA_HORARIA_CANONICA,
+} from "@/lib/fecha/zonaHorariaUsuario";
 
 /*
  * PÁGINA: /servicios/canto/reserva
@@ -19,15 +26,18 @@ import { formatearFechaRecurrente, generarFechasRecurrentes } from "@/lib/reserv
  * 6. Pago posterior a la creación de la reserva
  *
  * La API de disponibilidad utiliza America/Santiago como zona horaria
- * oficial de las reservas y entrega también la hora convertida a
- * America/Sao_Paulo para mostrarla al usuario.
+ * oficial de las reservas y entrega el instante de cada clase para que
+ * el navegador lo muestre en la zona horaria local del alumno.
  */
 
 type PlanId = "individual" | "mensual" | "bimensual";
 
 type HorarioDisponibilidad = {
   hora: string;
-  horaSaoPaulo: string;
+  clases: {
+    fecha: string;
+    inicio: string;
+  }[];
   disponible: boolean;
 };
 
@@ -125,7 +135,11 @@ export default function ReservaWizard() {
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [selectedTimeSaoPaulo, setSelectedTimeSaoPaulo] = useState<string | null>(null);
+  const [zonaHorariaUsuario, setZonaHorariaUsuario] = useState(ZONA_HORARIA_CANONICA);
+
+  useEffect(() => {
+    setZonaHorariaUsuario(detectarZonaHorariaUsuario());
+  }, []);
 
   // Disponibilidad real entregada por /api/reservas/disponibilidad.
   const [horariosDisponibilidad, setHorariosDisponibilidad] = useState<
@@ -167,6 +181,15 @@ export default function ReservaWizard() {
   const selectedPlanData =
     plans.find((p) => p.id === selectedPlan) ?? null;
 
+  const horarioSeleccionado = horariosDisponibilidad.find(
+    (horario) => horario.hora === selectedTime,
+  ) ?? null;
+
+  const nombreZonaHorariaUsuario = useMemo(
+    () => obtenerNombreZonaHoraria(zonaHorariaUsuario),
+    [zonaHorariaUsuario],
+  );
+
   const fechasRecurrentes = useMemo(
     () => selectedDate && selectedPlan
       ? generarFechasRecurrentes(toISODate(selectedDate), selectedPlan)
@@ -178,14 +201,13 @@ export default function ReservaWizard() {
    * Cuando se elige una fecha, consulta la disponibilidad real.
    * La API consulta Google Calendar y devuelve cada bloque con:
    * - hora: horario base de la reserva (America/Santiago)
-   * - horaSaoPaulo: horario mostrado al usuario
+   * - clases: instante real de cada fecha, interpretado desde America/Santiago
    * - disponible: true/false
    */
   useEffect(() => {
     if (!selectedDate) {
       setHorariosDisponibilidad([]);
       setSelectedTime(null);
-      setSelectedTimeSaoPaulo(null);
       setCargandoDisponibilidad(false);
       setErrorDisponibilidad(null);
       return;
@@ -196,7 +218,6 @@ export default function ReservaWizard() {
 
     setHorariosDisponibilidad([]);
     setSelectedTime(null);
-    setSelectedTimeSaoPaulo(null);
     setCargandoDisponibilidad(true);
     setErrorDisponibilidad(null);
 
@@ -290,14 +311,12 @@ export default function ReservaWizard() {
   function seleccionarFecha(date: Date) {
     setSelectedDate(date);
     setSelectedTime(null);
-    setSelectedTimeSaoPaulo(null);
   }
 
   function seleccionarHorario(horario: HorarioDisponibilidad) {
     if (!horario.disponible) return;
 
     setSelectedTime(horario.hora);
-    setSelectedTimeSaoPaulo(horario.horaSaoPaulo);
   }
 
   // Normaliza tildes, mayúsculas y espacios para identificar el país.
@@ -530,7 +549,12 @@ export default function ReservaWizard() {
                 <span className="text-sm text-neutral-500">Hora</span>
 
                 <span className="text-base font-medium text-neutral-900">
-                  {selectedTimeSaoPaulo ?? reservaCreada.hora}
+                  {horarioSeleccionado?.clases[0]
+                    ? formatearHoraEnZona(
+                        horarioSeleccionado.clases[0].inicio,
+                        zonaHorariaUsuario,
+                      )
+                    : reservaCreada.hora}
                 </span>
               </div>
             </div>
@@ -1059,12 +1083,12 @@ export default function ReservaWizard() {
                 </p>
 
                 <p className="text-sm text-neutral-500 text-center mb-10">
-                  Los horarios mostrados corresponden a tu horario local de São Paulo.
+                  Horarios mostrados en tu hora local de {nombreZonaHorariaUsuario}.
                 </p>
 
                 {selectedPlan !== "individual" && (
                   <div className="mb-6 rounded-2xl border border-neutral-200 bg-neutral-50 p-5 text-sm leading-relaxed text-neutral-600">
-                    El horario que elijas se aplicará a todas las clases de tu pack. Tus clases se realizarán semanalmente, en las fechas indicadas anteriormente, siempre a la misma hora.
+                    El horario que elijas se aplicará a todas las clases de tu pack en horario de Santiago. Si hay un cambio de horario de verano, tu hora local puede variar; verás el detalle al seleccionar un horario.
                   </div>
                 )}
 
@@ -1100,6 +1124,12 @@ export default function ReservaWizard() {
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                       {horariosDisponibilidad.map((horario) => {
                         const isSelected = selectedTime === horario.hora;
+                        const horaLocalPrimeraClase = horario.clases[0]
+                          ? formatearHoraEnZona(
+                              horario.clases[0].inicio,
+                              zonaHorariaUsuario,
+                            )
+                          : horario.hora;
 
                         return (
                           <button
@@ -1121,7 +1151,7 @@ export default function ReservaWizard() {
                             `}
                           >
                             <span className="block text-base md:text-lg font-medium">
-                              {horario.horaSaoPaulo}
+                              {horaLocalPrimeraClase}
                             </span>
 
                             <span
@@ -1144,14 +1174,33 @@ export default function ReservaWizard() {
                     </div>
                   )}
 
-                {selectedTime && selectedTimeSaoPaulo && (
+                {selectedTime && horarioSeleccionado && (
                   <div className="mt-8 rounded-2xl border border-neutral-200 p-5 text-center">
                     <p className="text-sm text-neutral-500">
                       Horario seleccionado
                     </p>
 
                     <p className="text-base font-medium text-neutral-900 mt-1">
-                      {selectedTimeSaoPaulo} — São Paulo
+                      {horarioSeleccionado.clases.length === 1
+                        ? formatearHoraEnZona(
+                            horarioSeleccionado.clases[0].inicio,
+                            zonaHorariaUsuario,
+                          )
+                        : "Horario local de cada clase"}
+                    </p>
+
+                    {horarioSeleccionado.clases.length > 1 && (
+                      <ul className="mt-3 space-y-1 text-sm text-neutral-600">
+                        {horarioSeleccionado.clases.map((clase) => (
+                          <li key={clase.fecha} className="capitalize">
+                            {formatearFechaHoraEnZona(clase.inicio, zonaHorariaUsuario)}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    <p className="mt-2 text-xs text-neutral-500">
+                      {nombreZonaHorariaUsuario}
                     </p>
                   </div>
                 )}
@@ -1341,7 +1390,12 @@ export default function ReservaWizard() {
                     <span className="text-sm text-neutral-500">Hora</span>
 
                     <span className="text-base font-medium text-neutral-900 text-right">
-                      {selectedTimeSaoPaulo ?? selectedTime ?? "—"}
+                      {horarioSeleccionado?.clases[0]
+                        ? formatearHoraEnZona(
+                            horarioSeleccionado.clases[0].inicio,
+                            zonaHorariaUsuario,
+                          )
+                        : selectedTime ?? "—"}
                     </span>
                   </div>
 

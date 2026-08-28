@@ -26,7 +26,6 @@ export async function GET(request: NextRequest) {
       fecha,
       fechas,
       zonaHoraria: "America/Santiago",
-      zonaHorariaUsuario: "America/Sao_Paulo",
       horarios,
     });
   } catch (error) {
